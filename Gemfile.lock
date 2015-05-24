@@ -1,0 +1,12 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    docopt (0.5.0)
+    rugged (0.22.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  docopt
+  rugged
