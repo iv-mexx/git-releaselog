@@ -22,9 +22,11 @@ Usage:
   #{__FILE__} --version
 
 Options:
+  from-commit   From which commit should the log be followed? Will default to head
+  to-commit     To which commit should the log be followed? Will default to the latest tag
   -h --help     Show this screen.
   --version     Show version.
-  --debug   Show debug output
+  --debug       Show debug output
 DOCOPT
 
 begin
