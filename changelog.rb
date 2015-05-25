@@ -17,6 +17,7 @@ Entries for the release notes must have a special format:
 Usage:
   #{__FILE__} [--debug]
   #{__FILE__} <from-commit> [--debug]
+  #{__FILE__} <from-commit> <to-commit> [--debug]
   #{__FILE__} -h | --help
   #{__FILE__} --version
 
@@ -45,21 +46,23 @@ rescue Rugged::OSError => e
   exit
 end
 
-# From given commit, or from hatest tag
+
+# From which commit should the log be followed? Will default to head
+commit_from = commit(repo, args["<from-commit>"], logger) || repo.head.target
+
+# To which commit should the log be followed? Will default to the latest tag
 commit_to = commit(repo, args["<to-commit>"], logger) || latestTagID(repo, logger)
 
-# to-commit not yet implemented, will always use head
-commit_from = commit(repo, args["<from-commit>"], logger) || repo.head.target
 
 # Initialize a walker that walks through the commits from the <from-commit> to the <to-commit>
 walker = Rugged::Walker.new(repo)
 walker.sorting(Rugged::SORT_DATE)
 walker.push(commit_from)
-walker.hide(commit_to)
+walker.hide(commit_to.parents.first)
 
 cnt = 0
 for c in walker
-  logger.info("c #{cnt} #{c.message}")
+  logger.info("c #{cnt} #{c.oid} #{c.message}")
   cnt = cnt + 1
   # binding.pry
 end
