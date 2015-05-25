@@ -41,7 +41,7 @@ logger.level = args["--debug"] ?  Logger::DEBUG : Logger::ERROR
 
 # Initialize Repo
 begin
-  repo = Rugged::Repository.discover("/Users/mexx/code/qn/qonnect-enduser-ios")
+  repo = Rugged::Repository.discover(".")
 rescue Rugged::OSError => e
   puts ("Current directory is not a git repo")
   logger.error(e.message)
@@ -60,15 +60,16 @@ commit_to = commit(repo, args["<to-commit>"], logger) || latestTagID(repo, logge
 walker = Rugged::Walker.new(repo)
 walker.sorting(Rugged::SORT_DATE)
 walker.push(commit_from)
-walker.hide(commit_to.parents.first)
+walker.hide(commit_to.parents.first) unless commit_to == nil
 
+# TODO: Do with each / reduce
 cnt = 0
+changes = []
 for c in walker
   logger.info("c #{cnt} #{c.oid} #{c.message}")
   cnt = cnt + 1
-  # binding.pry
+  changes += parseCommit(c)
 end
-
 
 # binding.pry
 
