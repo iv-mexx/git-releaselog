@@ -71,7 +71,4 @@ for c in walker
   changes += parseCommit(c)
 end
 
-# binding.pry
-
-
-logger.info("Continue")
+logger.info("Found #{changes.count} changes")

@@ -33,13 +33,32 @@ end
 
 # A class for representing a change
 class Change
+  FIX = 1
+  FEAT = 2
+
+  TOKEN_FIX = "* fix: "
+  TOKEN_FEAT = "* feat: "
+
   def initialize(type, note)
     @type = type
     @note = note
+  end
+
+  def self.parse(line)
+    if line.start_with? Change::TOKEN_FEAT
+      self.new(Change::FEAT, line.split(Change::TOKEN_FEAT).last)
+    elsif line.start_with? Change::TOKEN_FIX
+      self.new(Change::FIX, line.split(Change::TOKEN_FIX).last)
+    else
+      nil
+    end
   end
 end
 
 # Parses a commit message and returns an array of Changes
 def parseCommit(commit)
-  []
+  # Sepaerate into lines, remove whitespaces and filter out empty lines
+  lines = commit.message.lines.map(&:strip).reject(&:empty?)
+  # Parse the lines
+  lines.map{|line| Change.parse(line)}.reject(&:nil?)
 end
