@@ -62,13 +62,8 @@ walker.sorting(Rugged::SORT_DATE)
 walker.push(commit_from)
 walker.hide(commit_to.parents.first) unless commit_to == nil
 
-# TODO: Do with each / reduce
-cnt = 0
-changes = []
-for c in walker
-  logger.info("c #{cnt} #{c.oid} #{c.message}")
-  cnt = cnt + 1
-  changes += parseCommit(c)
-end
+# Parse all commits
+changes = walker.map{ |c| parseCommit(c)}.reduce(:+)
 
 logger.info("Found #{changes.count} changes")
+
