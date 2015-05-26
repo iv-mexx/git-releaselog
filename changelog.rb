@@ -15,9 +15,9 @@ Entries for the release notes must have a special format:
 `* feat: <description>`
 
 Usage:
-#{__FILE__} [--complete][--debug]
-#{__FILE__} <from-commit> [--debug]
-#{__FILE__} <from-commit> <to-commit> [--debug]
+#{__FILE__} [--complete][--debug][--slack|--md]
+#{__FILE__} <from-commit> [--debug][--slack|--md]
+#{__FILE__} <from-commit> <to-commit> [--debug][--slack|--md]
 #{__FILE__} -h | --help
 #{__FILE__} --version
 
@@ -25,6 +25,8 @@ Options:
 from-commit   From which commit should the log be followed? Will default to head
 to-commit     To which commit should the log be followed? Will default to the latest tag
 --complete    Traverses the whole git history and generates a changelog for all tags
+--slack       Generate the output with slack markup
+--md          Generate the output with markdown markup
 -h --help     Show this screen.
 --version     Show version.
 --debug       Show debug output
@@ -53,6 +55,8 @@ end
 
 arg_from = args["<from-commit>"]
 arg_to = args["<to-commit>"]
+
+use_markdown = args["--md"] != nil
 
 # Find if we're operating on tags
 tag_from = tagWithName(repo, arg_from)
@@ -97,7 +101,11 @@ if args["--complete"] && repo.tags.count > 0
     changeLogs += [Changelog.new(changes, nil, lastTag, nil, nil)]
   end
 
-  puts changeLogs.map { |log| "#{log.to_slack}\n" }
+  if use_markdown
+    puts changeLogs.reverse.map { |log| "#{log.to_md}\n" }
+  else
+    puts changeLogs.map { |log| "#{log.to_slack}\n" }
+  end    
 else
   # From which commit should the log be followed? Will default to head
   commit_from = (tag_from && tag_from.target) || commit(repo, arg_from, logger) || repo.head.target
@@ -110,6 +118,10 @@ else
   # Create the changelog
   log = Changelog.new(changes, tag_from, tag_to || tag_latest, commit_from, commit_to)
 
-  # Print the changelog
-  puts log.to_slack
+  Print the changelog
+  if use_markdown
+    puts log.to_md
+  else
+    puts log.to_slack
+  end
 end
