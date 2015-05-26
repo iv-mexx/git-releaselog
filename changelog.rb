@@ -44,7 +44,7 @@ logger.level = args["--debug"] ?  Logger::DEBUG : Logger::ERROR
 
 # Initialize Repo
 begin
-  repo = Rugged::Repository.discover("/Users/mexx/code/qn/qonnect-enduser-ios")
+  repo = Rugged::Repository.discover(".")
 rescue Rugged::OSError => e
   puts ("Current directory is not a git repo")
   logger.error(e.message)
