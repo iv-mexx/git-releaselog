@@ -18,6 +18,29 @@ show up in the changelog.
 These [keywords](#markup) can be used in commit messages. See the [Example](#example)
 section.
 
+## Usage
+
+The default use is, to generate the changelog starting from the last release 
+(the most recent tag) until now.
+
+* `./changelog.rb`: will look up the most recent tag and will search all commits from this tag to
+`HEAD`. 
+
+If you want to controll the range of commits that should be searched, you can 
+specify a _commit-hash_ or _tag-name_, e.g.
+
+* `./changelog.rb v1.0` will look up the commits starting from the tag with name `v1.0` to `HEAD`.
+* `./changelog.rb v1.0 7c064bb` will look up the commits starting from the tag with name `v1.0` to the commit `7c064bb`.
+
+Alternatively, you can choose the generate the whole changelog for the whole repo:
+
+* `./changelog.rb --complete` will search the whole git log and group the changes nicely in sections by existing tags.
+
+To control in which format the output should be marked up, you can use these options (the default is slack):
+
+* `--slack` produces output that looks nice when copy/pasted into slack
+* `--md` produces markdown output in reverse order, e.g this repo's [Changelog]
+
 ## Markup
 
 Entries that should show up in the changelog must have a special format:
@@ -88,3 +111,5 @@ _No new Fixes_
 #### Features
 * use the `--complete` parameter to generate a complete changelog over all tags
 ```
+
+[Changelog]: CHANGELOG.md
