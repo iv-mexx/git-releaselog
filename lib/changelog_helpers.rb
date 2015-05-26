@@ -61,9 +61,17 @@ class Changelog
     end
     str << "\n"
     str << "*Fixes*\n"
-    str << @fixes.map{|c| "\t- #{c.note}"}.join("\n")
+    if @fixes.count > 0
+      str << @fixes.map{|c| "\t- #{c.note}"}.join("\n")
+    else
+      str << "_No new Fixes_"
+    end
     str << "\n\n*Features*\n"
-    str << @features.map{|c| "\t- #{c.note}"}.join("\n")
+    if @features.count > 0
+      str << @features.map{|c| "\t- #{c.note}"}.join("\n")
+    else
+      str << "_No new Features_"
+    end
     str << "\n"
     str    
   end
