@@ -124,10 +124,10 @@ def searchGitLog(repo, commit_from, commit_to, logger)
   walker.push(commit_from)
   commit_to.parents.each do |parent|
     walker.hide(parent)
-  end
+  end unless commit_to == nil
 
   # Parse all commits and extract changes
   changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+)
-  logger.info("Found #{changes.count} changes")
+  logger.debug("Found #{changes.count} changes")
   return changes
 end
