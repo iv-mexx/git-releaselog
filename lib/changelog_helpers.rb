@@ -47,16 +47,31 @@ class Changelog
     @commit_to = to_commit
   end
 
-  def since
-    "#{@tag_to && @tag_to.name || @commit_to.object_id} (#{@commit_to && @commit_to.time.strftime("%d.%m.%Y")})"
-  end
-
   def to_slack
-    str = "Changes since #{since}\n"
+    str = ""
+
+    if @tag_from && @tag_from.name 
+      str << "Version #{@tag_from.name}"
+    else
+      str << "Unreleased"
+    end
+
+    if @commit_to
+      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    end
+    str << "\n"
     str << "*Fixes*\n"
-    str << @fixes.map{|c| "\t- #{c.note}"}.join("\n")
+    if @fixes.count > 0
+      str << @fixes.map{|c| "\t- #{c.note}"}.join("\n")
+    else
+      str << "_No new Fixes_"
+    end
     str << "\n\n*Features*\n"
-    str << @features.map{|c| "\t- #{c.note}"}.join("\n")
+    if @features.count > 0
+      str << @features.map{|c| "\t- #{c.note}"}.join("\n")
+    else
+      str << "_No new Features_"
+    end
     str << "\n"
     str    
   end
@@ -92,9 +107,27 @@ def tagWithName(repo, name)
 end
 
 # Parses a commit message and returns an array of Changes
-def parseCommit(commit)
+def parseCommit(commit, logger)
+  logger.debug("Parsing Commit #{commit.oid}")
   # Sepaerate into lines, remove whitespaces and filter out empty lines
   lines = commit.message.lines.map(&:strip).reject(&:empty?)
   # Parse the lines
   lines.map{|line| Change.parse(line)}.reject(&:nil?)
+end
+
+def searchGitLog(repo, commit_from, commit_to, logger)
+  logger.info("Traversing git tree from commit #{commit_from.oid} to commit #{commit_to && commit_to.oid}")
+
+  # Initialize a walker that walks through the commits from the <from-commit> to the <to-commit>
+  walker = Rugged::Walker.new(repo)
+  walker.sorting(Rugged::SORT_DATE)
+  walker.push(commit_from)
+  commit_to.parents.each do |parent|
+    walker.hide(parent)
+  end unless commit_to == nil
+
+  # Parse all commits and extract changes
+  changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+)
+  logger.debug("Found #{changes.count} changes")
+  return changes
 end
