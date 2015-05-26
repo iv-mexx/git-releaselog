@@ -2,7 +2,7 @@
 require "docopt"
 require "logger"
 require "rugged"
-require "./changelog_helpers"
+require "./lib/changelog_helpers"
 require "pry"
 
 
