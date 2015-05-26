@@ -83,7 +83,9 @@ logger.info("Traversing git tree from commit #{commit_from.oid} to commit #{comm
 walker = Rugged::Walker.new(repo)
 walker.sorting(Rugged::SORT_DATE)
 walker.push(commit_from)
-walker.hide(commit_to.parents.first) unless commit_to == nil
+commit_to.parents.each do |parent|
+  walker.hide(parent)
+end
 
 # Parse all commits and extract changes
 changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+)
