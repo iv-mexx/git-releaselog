@@ -47,12 +47,19 @@ class Changelog
     @commit_to = to_commit
   end
 
-  def since
-    "#{@tag_to && @tag_to.name || @commit_to.object_id} (#{@commit_to && @commit_to.time.strftime("%d.%m.%Y")})"
-  end
-
   def to_slack
-    str = "Changes since #{since}\n"
+    str = ""
+
+    if @tag_to && @tag_to.name 
+      str << "Version #{@tag_to.name}"
+    else
+      str << "Unreleased"
+    end
+
+    if @commit_to
+      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    end
+    str << "\n"
     str << "*Fixes*\n"
     str << @fixes.map{|c| "\t- #{c.note}"}.join("\n")
     str << "\n\n*Features*\n"
