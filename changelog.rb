@@ -118,7 +118,7 @@ else
   # Create the changelog
   log = Changelog.new(changes, tag_from, tag_to || tag_latest, commit_from, commit_to)
 
-  Print the changelog
+  # Print the changelog
   if use_markdown
     puts log.to_md
   else
