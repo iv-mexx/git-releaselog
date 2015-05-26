@@ -114,3 +114,20 @@ def parseCommit(commit, logger)
   # Parse the lines
   lines.map{|line| Change.parse(line)}.reject(&:nil?)
 end
+
+def searchGitLog(repo, commit_from, commit_to, logger)
+  logger.info("Traversing git tree from commit #{commit_from.oid} to commit #{commit_to && commit_to.oid}")
+
+  # Initialize a walker that walks through the commits from the <from-commit> to the <to-commit>
+  walker = Rugged::Walker.new(repo)
+  walker.sorting(Rugged::SORT_DATE)
+  walker.push(commit_from)
+  commit_to.parents.each do |parent|
+    walker.hide(parent)
+  end
+
+  # Parse all commits and extract changes
+  changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+)
+  logger.info("Found #{changes.count} changes")
+  return changes
+end
