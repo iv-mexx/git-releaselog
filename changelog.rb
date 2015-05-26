@@ -9,15 +9,17 @@ require "pry"
 doc = <<DOCOPT
 A script to generate release-notes from a git repository
 
-Entries for the release notes must have a special format:
+Commit messages are parsed for lines of the following format:
 
 `* fix: <description>`
 `* feat: <description>`
 
+The descriptions are collected and printed as changelog.
+
 Usage:
-#{__FILE__} [--complete][--debug]
-#{__FILE__} <from-commit> [--debug]
-#{__FILE__} <from-commit> <to-commit> [--debug]
+#{__FILE__} [--complete][--debug][--slack|--md]
+#{__FILE__} <from-commit> [--debug][--slack|--md]
+#{__FILE__} <from-commit> <to-commit> [--debug][--slack|--md]
 #{__FILE__} -h | --help
 #{__FILE__} --version
 
@@ -25,6 +27,8 @@ Options:
 from-commit   From which commit should the log be followed? Will default to head
 to-commit     To which commit should the log be followed? Will default to the latest tag
 --complete    Traverses the whole git history and generates a changelog for all tags
+--slack       Generate the output with slack markup
+--md          Generate the output with markdown markup
 -h --help     Show this screen.
 --version     Show version.
 --debug       Show debug output
@@ -32,7 +36,7 @@ DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.0.1')
+  args =  Docopt::docopt(doc, version: '0.2.0')
 rescue Docopt::Exit => e
   puts e.message
   exit
@@ -53,6 +57,8 @@ end
 
 arg_from = args["<from-commit>"]
 arg_to = args["<to-commit>"]
+
+use_markdown = args["--md"]
 
 # Find if we're operating on tags
 tag_from = tagWithName(repo, arg_from)
@@ -75,27 +81,33 @@ if args["--complete"] && repo.tags.count > 0
   sorted_tags = repo.tags.sort { |t1, t2| t1.target.time <=> t2.target.time }
   changeLogs = []
   sorted_tags.each_with_index do |tag, index|
-    if tag == sorted_tags.last
-      # Last Interval: Generate from last Tag to HEAD
-      changes = searchGitLog(repo, repo.head.target, tag.target, logger)
-      logger.info("Tag #{tag.name} to HEAD: #{changes.count} changes")
-      changeLogs += [Changelog.new(changes, nil, tag, nil, nil)]
-    end
-
     if index == 0
       # First Interval: Generate from start of Repo to the first Tag
       changes = searchGitLog(repo, tag.target, nil, logger)
       logger.info("First Tag: #{tag.name}: #{changes.count} changes")
       changeLogs += [Changelog.new(changes, tag, nil, nil, nil)]
-    else 
+    else
       # Normal interval: Generate from one Tag to the next Tag
       previousTag = sorted_tags[index-1]
       changes = searchGitLog(repo, tag.target, previousTag.target, logger)
       logger.info("Tag #{previousTag.name} to #{tag.name}: #{changes.count} changes")
-      changeLogs += [Changelog.new(changes, previousTag, tag, nil, nil)]
+      changeLogs += [Changelog.new(changes, tag, previousTag, nil, nil)]
     end
   end
-  puts changeLogs.map { |log| "#{log.to_slack}\n" }
+
+  if sorted_tags.count > 0 
+    lastTag = sorted_tags.last
+    # Last Interval: Generate from last Tag to HEAD
+    changes = searchGitLog(repo, repo.head.target, lastTag.target, logger)
+    logger.info("Tag #{lastTag.name} to HEAD: #{changes.count} changes")
+    changeLogs += [Changelog.new(changes, nil, lastTag, nil, nil)]
+  end
+
+  if use_markdown
+    puts changeLogs.reverse.map { |log| "#{log.to_md}\n" }
+  else
+    puts changeLogs.map { |log| "#{log.to_slack}\n" }
+  end
 else
   # From which commit should the log be followed? Will default to head
   commit_from = (tag_from && tag_from.target) || commit(repo, arg_from, logger) || repo.head.target
@@ -109,5 +121,9 @@ else
   log = Changelog.new(changes, tag_from, tag_to || tag_latest, commit_from, commit_to)
 
   # Print the changelog
-  puts log.to_slack
+  if use_markdown
+    puts log.to_md
+  else
+    puts log.to_slack
+  end
 end

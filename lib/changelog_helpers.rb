@@ -75,6 +75,35 @@ class Changelog
     str << "\n"
     str    
   end
+
+  def to_md
+    str = ""
+
+    if @tag_from && @tag_from.name 
+      str << "## Version #{@tag_from.name}"
+    else
+      str << "## Unreleased"
+    end
+
+    if @commit_to
+      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    end
+    str << "\n"
+    str << "#### Fixes\n"
+    if @fixes.count > 0
+      str << @fixes.map{|c| "* #{c.note}"}.join("\n")
+    else
+      str << "_No new Fixes_"
+    end
+    str << "\n\n#### Features \n"
+    if @features.count > 0
+      str << @features.map{|c| "* #{c.note}"}.join("\n")
+    else
+      str << "_No new Features_"
+    end
+    str << "\n"
+    str    
+  end
 end
 
 # check if the given refString (tag name or commit-hash) exists in the repo 
@@ -127,7 +156,7 @@ def searchGitLog(repo, commit_from, commit_to, logger)
   end unless commit_to == nil
 
   # Parse all commits and extract changes
-  changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+)
+  changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+) || []
   logger.debug("Found #{changes.count} changes")
   return changes
 end
