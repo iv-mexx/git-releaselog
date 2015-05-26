@@ -50,8 +50,8 @@ class Changelog
   def to_slack
     str = ""
 
-    if @tag_to && @tag_to.name 
-      str << "Version #{@tag_to.name}"
+    if @tag_from && @tag_from.name 
+      str << "Version #{@tag_from.name}"
     else
       str << "Unreleased"
     end
@@ -99,7 +99,8 @@ def tagWithName(repo, name)
 end
 
 # Parses a commit message and returns an array of Changes
-def parseCommit(commit)
+def parseCommit(commit, logger)
+  logger.debug("Parsing Commit #{commit.oid}")
   # Sepaerate into lines, remove whitespaces and filter out empty lines
   lines = commit.message.lines.map(&:strip).reject(&:empty?)
   # Parse the lines

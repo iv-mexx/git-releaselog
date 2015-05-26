@@ -86,7 +86,7 @@ walker.push(commit_from)
 walker.hide(commit_to.parents.first) unless commit_to == nil
 
 # Parse all commits and extract changes
-changes = walker.map{ |c| parseCommit(c)}.reduce(:+)
+changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+)
 
 logger.info("Found #{changes.count} changes")
 
