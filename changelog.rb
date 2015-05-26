@@ -9,10 +9,12 @@ require "pry"
 doc = <<DOCOPT
 A script to generate release-notes from a git repository
 
-Entries for the release notes must have a special format:
+Commit messages are parsed for lines of the following format:
 
 `* fix: <description>`
 `* feat: <description>`
+
+The descriptions are collected and printed as changelog.
 
 Usage:
 #{__FILE__} [--complete][--debug][--slack|--md]
