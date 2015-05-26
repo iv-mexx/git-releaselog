@@ -78,7 +78,7 @@ Date:   Tue May 26 12:49:00 2015 +0200
 
 Notice, that commit `1f4abe3399891cfd429e5aa474e6c414f7e2b3b2` has an extra line with a `feat` keyword.
 The changelog for these commits looks like this:
-`./changelog.rb fa40cdb51c674df8b4a564e283a601d50fcdd55f d41dac909757b265d226589ead6a5a57aba5dc8 --md`
+`./changelog.rb fa40cdb d41dac9 --md`
 
 ```
 ## Unreleased (_26.05.2015_)
