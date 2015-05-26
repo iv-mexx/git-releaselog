@@ -127,7 +127,7 @@ def searchGitLog(repo, commit_from, commit_to, logger)
   end unless commit_to == nil
 
   # Parse all commits and extract changes
-  changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+)
+  changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+) || []
   logger.debug("Found #{changes.count} changes")
   return changes
 end

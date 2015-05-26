@@ -75,13 +75,6 @@ if args["--complete"] && repo.tags.count > 0
   sorted_tags = repo.tags.sort { |t1, t2| t1.target.time <=> t2.target.time }
   changeLogs = []
   sorted_tags.each_with_index do |tag, index|
-    if tag == sorted_tags.last
-      # Last Interval: Generate from last Tag to HEAD
-      changes = searchGitLog(repo, repo.head.target, tag.target, logger)
-      logger.info("Tag #{tag.name} to HEAD: #{changes.count} changes")
-      changeLogs += [Changelog.new(changes, nil, tag, nil, nil)]
-    end
-
     if index == 0
       # First Interval: Generate from start of Repo to the first Tag
       changes = searchGitLog(repo, tag.target, nil, logger)
@@ -92,9 +85,18 @@ if args["--complete"] && repo.tags.count > 0
       previousTag = sorted_tags[index-1]
       changes = searchGitLog(repo, tag.target, previousTag.target, logger)
       logger.info("Tag #{previousTag.name} to #{tag.name}: #{changes.count} changes")
-      changeLogs += [Changelog.new(changes, previousTag, tag, nil, nil)]
+      changeLogs += [Changelog.new(changes, tag, previousTag, nil, nil)]
     end
   end
+
+  if sorted_tags.count > 0 
+    lastTag = sorted_tags.last
+    # Last Interval: Generate from last Tag to HEAD
+    changes = searchGitLog(repo, repo.head.target, lastTag.target, logger)
+    logger.info("Tag #{lastTag.name} to HEAD: #{changes.count} changes")
+    changeLogs += [Changelog.new(changes, nil, lastTag, nil, nil)]
+  end
+
   puts changeLogs.map { |log| "#{log.to_slack}\n" }
 else
   # From which commit should the log be followed? Will default to head
