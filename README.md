@@ -15,7 +15,7 @@ Thats why this tool does not attempt to build a changelog from normal commit
 messages but instead requires special keywords to mark notes that should 
 show up in the changelog.
 
-These [keywords][markup] can be used in commit messages. See the [Example][example]
+These [keywords][#markup] can be used in commit messages. See the [Example][#example]
 section.
 
 ## Markup
