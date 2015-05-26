@@ -84,7 +84,7 @@ if args["--complete"] && repo.tags.count > 0
       changes = searchGitLog(repo, tag.target, nil, logger)
       logger.info("First Tag: #{tag.name}: #{changes.count} changes")
       changeLogs += [Changelog.new(changes, tag, nil, nil, nil)]
-    else 
+    else
       # Normal interval: Generate from one Tag to the next Tag
       previousTag = sorted_tags[index-1]
       changes = searchGitLog(repo, tag.target, previousTag.target, logger)
@@ -105,7 +105,7 @@ if args["--complete"] && repo.tags.count > 0
     puts changeLogs.reverse.map { |log| "#{log.to_md}\n" }
   else
     puts changeLogs.map { |log| "#{log.to_slack}\n" }
-  end    
+  end
 else
   # From which commit should the log be followed? Will default to head
   commit_from = (tag_from && tag_from.target) || commit(repo, arg_from, logger) || repo.head.target
