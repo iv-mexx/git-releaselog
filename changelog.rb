@@ -56,7 +56,7 @@ end
 arg_from = args["<from-commit>"]
 arg_to = args["<to-commit>"]
 
-use_markdown = args["--md"] != nil
+use_markdown = args["--md"]
 
 # Find if we're operating on tags
 tag_from = tagWithName(repo, arg_from)
