@@ -75,16 +75,18 @@ if args["--complete"] && repo.tags.count > 0
   sorted_tags = repo.tags.sort { |t1, t2| t1.target.time <=> t2.target.time }
   changeLogs = []
   sorted_tags.each_with_index do |tag, index|
+    if tag == sorted_tags.last
+      # Last Interval: Generate from last Tag to HEAD
+      changes = searchGitLog(repo, repo.head.target, tag.target, logger)
+      logger.info("Tag #{tag.name} to HEAD: #{changes.count} changes")
+      changeLogs += [Changelog.new(changes, nil, tag, nil, nil)]
+    end
+
     if index == 0
       # First Interval: Generate from start of Repo to the first Tag
       changes = searchGitLog(repo, tag.target, nil, logger)
       logger.info("First Tag: #{tag.name}: #{changes.count} changes")
       changeLogs += [Changelog.new(changes, tag, nil, nil, nil)]
-    elsif tag == sorted_tags.last
-      # Last Interval: Generate from last Tag to HEAD
-      changes = searchGitLog(repo, repo.head.target, tag.target, logger)
-      logger.info("Tag #{tag.name} to HEAD: #{changes.count} changes")
-      changeLogs += [Changelog.new(changes, nil, tag, nil, nil)]
     else 
       # Normal interval: Generate from one Tag to the next Tag
       previousTag = sorted_tags[index-1]
