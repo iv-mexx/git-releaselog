@@ -36,7 +36,7 @@ DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.2.0')
+  args =  Docopt::docopt(doc, version: '0.2.2')
 rescue Docopt::Exit => e
   puts e.message
   exit
