@@ -10,4 +10,6 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/iv-mexx/git-changelog'
   s.license     = 'MIT'
   s.executables = "changelog"
+  s.add_runtime_dependency 'docopt', '~> 0.5', '>= 0.5.0'
+  s.add_runtime_dependency 'rugged', '~> 0.22', '>= 0.22.2'
 end
