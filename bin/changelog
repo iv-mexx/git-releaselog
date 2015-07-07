@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
+require "changelog_helpers"
 require "docopt"
 require "logger"
 require "rugged"
-require "./lib/changelog_helpers"
 require "pry"
 
 
@@ -95,7 +95,7 @@ if args["--complete"] && repo.tags.count > 0
     end
   end
 
-  if sorted_tags.count > 0 
+  if sorted_tags.count > 0
     lastTag = sorted_tags.last
     # Last Interval: Generate from last Tag to HEAD
     changes = searchGitLog(repo, repo.head.target, lastTag.target, logger)
