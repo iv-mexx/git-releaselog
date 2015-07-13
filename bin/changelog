@@ -3,7 +3,7 @@ require "changelog_helpers"
 require "docopt"
 require "logger"
 require "rugged"
-require "pry"
+# require "pry"
 
 
 doc = <<DOCOPT
