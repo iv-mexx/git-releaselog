@@ -1,7 +1,8 @@
-source 'https://rubygems.org'
-ruby '2.2.2'
-# ruby-gemset=rails
+# A sample Gemfile
+source "https://rubygems.org"
 
-gem 'rugged'
-gem 'docopt'
-gem 'pry'
+# gem "rails"
+
+gemspec
+
+gem "rugged", :git => "git@github.com:libgit2/rugged.git", :tag => "v0.23.0b4"
