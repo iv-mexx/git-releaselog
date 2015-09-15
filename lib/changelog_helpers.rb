@@ -26,15 +26,31 @@ class Change
     @note
   end
 
-  def self.parse(line)
+  def self.parse(line, scope = nil)
     if line.start_with? Change::TOKEN_FEAT
-      self.new(Change::FEAT, line.split(Change::TOKEN_FEAT).last)
+      self.new(Change::FEAT, line.split(Change::TOKEN_FEAT).last).check_scope(scope)
     elsif line.start_with? Change::TOKEN_FIX
-      self.new(Change::FIX, line.split(Change::TOKEN_FIX).last)
+      self.new(Change::FIX, line.split(Change::TOKEN_FIX).last).check_scope(scope)
     elsif line.start_with? Change::TOKEN_GUI
-      self.new(Change::GUI, line.split(Change::TOKEN_GUI).last)
+      self.new(Change::GUI, line.split(Change::TOKEN_GUI).last).check_scope(scope)
     else
       nil
+    end
+  end
+
+  def check_scope(scope = nil)
+    # If no scope is requested or the change has no scope include this change unchanged
+    return self unless scope 
+    change_scope = /^\s*\[\w+\]/.match(@note)
+    return self unless change_scope
+
+    if change_scope[0][1..-2] == scope
+      #  Change has the scope that is requested, strip the scope from the change note
+      @note = change_scope.post_match.strip
+      return self
+    else 
+      #  Change has a different scope than requested
+      return nil
     end
   end
 end
@@ -149,15 +165,15 @@ def tagWithName(repo, name)
 end
 
 # Parses a commit message and returns an array of Changes
-def parseCommit(commit, logger)
+def parseCommit(commit, scope, logger)
   logger.debug("Parsing Commit #{commit.oid}")
   # Sepaerate into lines, remove whitespaces and filter out empty lines
   lines = commit.message.lines.map(&:strip).reject(&:empty?)
   # Parse the lines
-  lines.map{|line| Change.parse(line)}.reject(&:nil?)
+  lines.map{|line| Change.parse(line, scope)}.reject(&:nil?)
 end
 
-def searchGitLog(repo, commit_from, commit_to, logger)
+def searchGitLog(repo, commit_from, commit_to, scope, logger)
   logger.info("Traversing git tree from commit #{commit_from.oid} to commit #{commit_to && commit_to.oid}")
 
   # Initialize a walker that walks through the commits from the <from-commit> to the <to-commit>
@@ -169,7 +185,7 @@ def searchGitLog(repo, commit_from, commit_to, logger)
   end unless commit_to == nil
 
   # Parse all commits and extract changes
-  changes = walker.map{ |c| parseCommit(c, logger)}.reduce(:+) || []
+  changes = walker.map{ |c| parseCommit(c, scope, logger)}.reduce(:+) || []
   logger.debug("Found #{changes.count} changes")
   return changes
 end
