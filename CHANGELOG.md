@@ -1,3 +1,13 @@
+## Version 0.4.1
+
+*Fixes*
+* fix executable name in gemspec
+
+## Version 0.4.0
+
+*Features*
+* this gem can now be "require"d from and be used in other ruby files
+
 ## Version 0.3.0
 
 *Features*
