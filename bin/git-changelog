@@ -14,7 +14,7 @@ Commit messages are parsed for lines of the following format:
 The descriptions are collected and printed as changelog.
 
 Usage:
-#{__FILE__} [--complete][--debug][--slack|--md][--scope=<scope>]
+#{__FILE__} [--complete][--debug][--format=<format>][--scope=<scope>]
 #{__FILE__} <from-commit> [--debug][--format=<format>][--scope=<scope>]
 #{__FILE__} <from-commit> <to-commit> [--debug][--format=<format>][--scope=<scope>]
 #{__FILE__} -h | --help
@@ -33,7 +33,7 @@ DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.4.0')
+  args =  Docopt::docopt(doc, version: '0.4.1')
 rescue Docopt::Exit => e
   puts e.message
   exit
