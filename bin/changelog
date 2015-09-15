@@ -13,6 +13,7 @@ Commit messages are parsed for lines of the following format:
 
 `* fix: <description>`
 `* feat: <description>`
+`* gui: <description>`
 
 The descriptions are collected and printed as changelog.
 

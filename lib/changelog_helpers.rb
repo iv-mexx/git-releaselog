@@ -7,9 +7,11 @@
 class Change
   FIX = 1
   FEAT = 2
+  GUI = 3
 
   TOKEN_FIX = "* fix: "
   TOKEN_FEAT = "* feat: "
+  TOKEN_GUI = "* gui: "
 
   def initialize(type, note)
     @type = type
@@ -29,6 +31,8 @@ class Change
       self.new(Change::FEAT, line.split(Change::TOKEN_FEAT).last)
     elsif line.start_with? Change::TOKEN_FIX
       self.new(Change::FIX, line.split(Change::TOKEN_FIX).last)
+    elsif line.start_with? Change::TOKEN_GUI
+      self.new(Change::GUI, line.split(Change::TOKEN_GUI).last)
     else
       nil
     end
@@ -41,6 +45,7 @@ class Changelog
   def initialize(changes, tag_from = nil, tag_to = nil, from_commit = nil, to_commit = nil)
     @fixes = changes.select{ |c| c.type == Change::FIX }
     @features = changes.select{ |c| c.type == Change::FEAT }
+    @gui_changes = changes.select{ |c| c.type == Change::GUI }
     @tag_from = tag_from
     @tag_to = tag_to
     @commit_from = from_commit
@@ -60,18 +65,22 @@ class Changelog
       str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
     end
     str << "\n"
-    str << "*Fixes*\n"
+
     if @fixes.count > 0
+      str << "*Fixes*\n"
       str << @fixes.map{|c| "\t- #{c.note}"}.join("\n")
-    else
-      str << "_No new Fixes_"
     end
-    str << "\n\n*Features*\n"
+
     if @features.count > 0
+      str << "\n\n*Features*\n"
       str << @features.map{|c| "\t- #{c.note}"}.join("\n")
-    else
-      str << "_No new Features_"
     end
+
+    if @gui_changes.count > 0
+      str << "\n\n*GUI*\n"
+      str << @gui_changes.map{|c| "\t- #{c.note}"}.join("\n")
+    end
+
     str << "\n"
     str    
   end
@@ -89,18 +98,22 @@ class Changelog
       str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
     end
     str << "\n"
-    str << "#### Fixes\n"
+
     if @fixes.count > 0
+      str << "*Fixes*\n"
       str << @fixes.map{|c| "* #{c.note}"}.join("\n")
-    else
-      str << "_No new Fixes_"
     end
-    str << "\n\n#### Features \n"
+
     if @features.count > 0
+      str << "\n\n*Features*\n"
       str << @features.map{|c| "* #{c.note}"}.join("\n")
-    else
-      str << "_No new Features_"
     end
+
+    if @gui_changes.count > 0
+      str << "\n\n*GUI*\n"
+      str << @gui_changes.map{|c| "* #{c.note}"}.join("\n")
+    end
+
     str << "\n"
     str    
   end
