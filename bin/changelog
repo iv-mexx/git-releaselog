@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
+require "changelog_helpers"
 require "docopt"
 require "logger"
 require "rugged"
-require "./lib/changelog_helpers"
-require "pry"
+# require "pry"
 
 
 doc = <<DOCOPT
@@ -11,32 +11,34 @@ A script to generate release-notes from a git repository
 
 Commit messages are parsed for lines of the following format:
 
-`* fix: <description>`
-`* feat: <description>`
+`* fix: [<scope(optional)>] <description>`
+`* feat: [<scope(optional)>] <description>`
+`* gui: [<scope(optional)>] <description>`
 
 The descriptions are collected and printed as changelog.
 
 Usage:
-#{__FILE__} [--complete][--debug][--slack|--md]
-#{__FILE__} <from-commit> [--debug][--slack|--md]
-#{__FILE__} <from-commit> <to-commit> [--debug][--slack|--md]
+#{__FILE__} [--complete][--debug][--slack|--md][--scope=<scope>]
+#{__FILE__} <from-commit> [--debug][--slack|--md][--scope=<scope>]
+#{__FILE__} <from-commit> <to-commit> [--debug][--slack|--md][--scope=<scope>]
 #{__FILE__} -h | --help
 #{__FILE__} --version
 
 Options:
-from-commit   From which commit should the log be followed? Will default to head
-to-commit     To which commit should the log be followed? Will default to the latest tag
---complete    Traverses the whole git history and generates a changelog for all tags
---slack       Generate the output with slack markup
---md          Generate the output with markdown markup
--h --help     Show this screen.
---version     Show version.
---debug       Show debug output
+from-commit       From which commit should the log be followed? Will default to head
+to-commit         To which commit should the log be followed? Will default to the latest tag
+--scope=<scope>   The scope. Will only include changelog entries with that scope or without scope.
+--complete        Traverses the whole git history and generates a changelog for all tags
+--slack           Generate the output with slack markup
+--md              Generate the output with markdown markup
+-h --help         Show this screen.
+--version         Show version.
+--debug           Show debug output
 DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.2.0')
+  args =  Docopt::docopt(doc, version: '0.2.2')
 rescue Docopt::Exit => e
   puts e.message
   exit
@@ -83,22 +85,22 @@ if args["--complete"] && repo.tags.count > 0
   sorted_tags.each_with_index do |tag, index|
     if index == 0
       # First Interval: Generate from start of Repo to the first Tag
-      changes = searchGitLog(repo, tag.target, nil, logger)
+      changes = searchGitLog(repo, tag.target, nil, args["--scope"], logger)
       logger.info("First Tag: #{tag.name}: #{changes.count} changes")
       changeLogs += [Changelog.new(changes, tag, nil, nil, nil)]
     else
       # Normal interval: Generate from one Tag to the next Tag
       previousTag = sorted_tags[index-1]
-      changes = searchGitLog(repo, tag.target, previousTag.target, logger)
+      changes = searchGitLog(repo, tag.target, previousTag.target, args["--scope"], logger)
       logger.info("Tag #{previousTag.name} to #{tag.name}: #{changes.count} changes")
       changeLogs += [Changelog.new(changes, tag, previousTag, nil, nil)]
     end
   end
 
-  if sorted_tags.count > 0 
+  if sorted_tags.count > 0
     lastTag = sorted_tags.last
     # Last Interval: Generate from last Tag to HEAD
-    changes = searchGitLog(repo, repo.head.target, lastTag.target, logger)
+    changes = searchGitLog(repo, repo.head.target, lastTag.target, args["--scope"], logger)
     logger.info("Tag #{lastTag.name} to HEAD: #{changes.count} changes")
     changeLogs += [Changelog.new(changes, nil, lastTag, nil, nil)]
   end
@@ -116,7 +118,7 @@ else
   commit_to = (tag_to && tag_to.target) || commit(repo, arg_to, logger) || tag_latest && (tag_latest.target)
 
 
-  changes = searchGitLog(repo, commit_from, commit_to, logger)
+  changes = searchGitLog(repo, commit_from, commit_to, args["--scope"], logger)
   # Create the changelog
   log = Changelog.new(changes, tag_from, tag_to || tag_latest, commit_from, commit_to)
 

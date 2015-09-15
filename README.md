@@ -45,13 +45,43 @@ To control in which format the output should be marked up, you can use these opt
 
 Entries that should show up in the changelog must have a special format:
 
-`* <keyword>: <description>`
+`* <keyword>: [<optional-scope] <description>`
 
 The descriptions are extracted from the git history and grouped by keyword. 
 Currently, the following keynotes are supported
 
 * `fix`
 * `feat`
+* `gui`
+
+### Scope
+
+The changelog can be limited to a certain __scope__. This is helpful when multiple projects / targets are in the same git repository (E.g. several targets of an app with a large shared codebase).
+
+When a scope is declared for the generation of the changelog, only entries that are marked with that scope and entries without scope are included into the changelog.
+
+### Example
+
+Given these lines in a commit message:
+
+```
+* feat: [project-x] add a new feature to project-x
+* fix: [project-y] fix a bug in project-y
+* fix: fix a bug that affected both projects
+```
+running
+```
+changelog --scope project-x
+```
+will generate this changelog:
+
+```
+*Features*
+* add a new feature to project-x
+
+*Fixes*
+* fix a bug that affected both projects
+```
 
 ## Usage suggestion
 
