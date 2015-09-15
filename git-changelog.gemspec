@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'git-changelog'
-  s.version     = '0.3.0'
+  s.version     = '0.4.0'
   s.date        = '2015-09-15'
   s.summary     = "Generate a changelog from a git repository"
   s.description = "Write your changelog as you go into your commit messages. This tool generates a useful changelog from marked lines in your git commit messages"
