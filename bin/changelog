@@ -1,10 +1,6 @@
 #!/usr/bin/env ruby
-require "changelog_helpers"
+require "git-changelog"
 require "docopt"
-require "logger"
-require "rugged"
-# require "pry"
-
 
 doc = <<DOCOPT
 A script to generate release-notes from a git repository
@@ -19,8 +15,8 @@ The descriptions are collected and printed as changelog.
 
 Usage:
 #{__FILE__} [--complete][--debug][--slack|--md][--scope=<scope>]
-#{__FILE__} <from-commit> [--debug][--slack|--md][--scope=<scope>]
-#{__FILE__} <from-commit> <to-commit> [--debug][--slack|--md][--scope=<scope>]
+#{__FILE__} <from-commit> [--debug][--format=<format>][--scope=<scope>]
+#{__FILE__} <from-commit> <to-commit> [--debug][--format=<format>][--scope=<scope>]
 #{__FILE__} -h | --help
 #{__FILE__} --version
 
@@ -28,9 +24,8 @@ Options:
 from-commit       From which commit should the log be followed? Will default to head
 to-commit         To which commit should the log be followed? Will default to the latest tag
 --scope=<scope>   The scope. Will only include changelog entries with that scope or without scope.
+--format=<format> The format in which the output should be generated. Currently supports 'slack' and 'md' (for markdown)
 --complete        Traverses the whole git history and generates a changelog for all tags
---slack           Generate the output with slack markup
---md              Generate the output with markdown markup
 -h --help         Show this screen.
 --version         Show version.
 --debug           Show debug output
@@ -38,94 +33,18 @@ DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.2.2')
+  args =  Docopt::docopt(doc, version: '0.3.0')
 rescue Docopt::Exit => e
   puts e.message
   exit
 end
 
-# Initialize Logger
-logger = Logger.new(STDOUT)
-logger.level = args["--debug"] ?  Logger::DEBUG : Logger::ERROR
-
-# Initialize Repo
-begin
-  repo = Rugged::Repository.discover(".")
-rescue Rugged::OSError => e
-  puts ("Current directory is not a git repo")
-  logger.error(e.message)
-  exit
-end
-
-arg_from = args["<from-commit>"]
-arg_to = args["<to-commit>"]
-
-use_markdown = args["--md"]
-
-# Find if we're operating on tags
-tag_from = tagWithName(repo, arg_from)
-tag_to = tagWithName(repo, arg_to)
-tag_latest = latestTagID(repo, logger)
-
-if tag_from
-  logger.info("Found Tag #{tag_from.name} to start from")
-end
-
-if tag_to
-  logger.info("Found Tag #{tag_to.name} to end at")
-end
-
-if tag_latest
-  logger.info("Latest Tag found: #{tag_latest.name}")
-end
-
-if args["--complete"] && repo.tags.count > 0
-  sorted_tags = repo.tags.sort { |t1, t2| t1.target.time <=> t2.target.time }
-  changeLogs = []
-  sorted_tags.each_with_index do |tag, index|
-    if index == 0
-      # First Interval: Generate from start of Repo to the first Tag
-      changes = searchGitLog(repo, tag.target, nil, args["--scope"], logger)
-      logger.info("First Tag: #{tag.name}: #{changes.count} changes")
-      changeLogs += [Changelog.new(changes, tag, nil, nil, nil)]
-    else
-      # Normal interval: Generate from one Tag to the next Tag
-      previousTag = sorted_tags[index-1]
-      changes = searchGitLog(repo, tag.target, previousTag.target, args["--scope"], logger)
-      logger.info("Tag #{previousTag.name} to #{tag.name}: #{changes.count} changes")
-      changeLogs += [Changelog.new(changes, tag, previousTag, nil, nil)]
-    end
-  end
-
-  if sorted_tags.count > 0
-    lastTag = sorted_tags.last
-    # Last Interval: Generate from last Tag to HEAD
-    changes = searchGitLog(repo, repo.head.target, lastTag.target, args["--scope"], logger)
-    logger.info("Tag #{lastTag.name} to HEAD: #{changes.count} changes")
-    changeLogs += [Changelog.new(changes, nil, lastTag, nil, nil)]
-  end
-
-  if use_markdown
-    puts changeLogs.reverse.map { |log| "#{log.to_md}\n" }
-  else
-    puts changeLogs.map { |log| "#{log.to_slack}\n" }
-  end
-else
-  # From which commit should the log be followed? Will default to head
-  commit_from = (tag_from && tag_from.target) || commit(repo, arg_from, logger) || repo.head.target
-
-  # To which commit should the log be followed? Will default to the latest tag
-  commit_to = (tag_to && tag_to.target) || commit(repo, arg_to, logger) || tag_latest && (tag_latest.target)
-
-
-  changes = searchGitLog(repo, commit_from, commit_to, args["--scope"], logger)
-  # Create the changelog
-  log = Changelog.new(changes, tag_from, tag_to || tag_latest, commit_from, commit_to)
-
-  # Print the changelog
-  if use_markdown
-    puts log.to_md
-  else
-    puts log.to_slack
-  end
-end
+puts Changelog.generate_changelog(
+  repo_path: ".",
+  from_tag: args["<from-commit>"],
+  to_tag: args["<to-commit>"],
+  scope: args["--scope"],
+  format: args["--format"] || "slack",
+  generate_complete: args["--complete"],
+  verbose: (args["--debug"] ? true : false)
+)
