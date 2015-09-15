@@ -3,6 +3,9 @@
 *Fixes*
 * fix executable name in gemspec
 
+*Features*
+*  new cmd-line parameter `format` instead of `--slack` and `--md` flags
+
 ## Version 0.4.0
 
 *Features*
