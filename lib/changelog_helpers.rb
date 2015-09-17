@@ -203,10 +203,10 @@ def searchGitLog(repo, commit_from, commit_to, scope, logger)
   # Initialize a walker that walks through the commits from the <from-commit> to the <to-commit>
   walker = Rugged::Walker.new(repo)
   walker.sorting(Rugged::SORT_DATE)
-  walker.push(commit_from)
-  commit_to.parents.each do |parent|
+  walker.push(commit_to)
+  commit_from.parents.each do |parent|
     walker.hide(parent)
-  end unless commit_to == nil
+  end unless commit_from == nil
 
   # Parse all commits and extract changes
   changes = walker.map{ |c| parseCommit(c, scope, logger)}.reduce(:+) || []

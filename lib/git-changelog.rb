@@ -5,8 +5,8 @@ require "logger"
 class Changelog
   def self.generate_changelog(options = {})
   repo_path = options.fetch(:repo_path, '.')
-  from_tag = options.fetch(:from_tag, nil)
-  to_tag = options.fetch(:to_tag, nil)
+  from_tag_name = options.fetch(:from_tag, nil)
+  to_tag_name = options.fetch(:to_tag, nil)
   scope = options.fetch(:scope, nil)
   format = options.fetch(:format, 'slack')
   generate_complete = options.fetch(:generate_complete, false)
@@ -26,20 +26,20 @@ class Changelog
   end
 
   # Find if we're operating on tags
-  tag_from = tagWithName(repo, from_tag)
-  tag_to = tagWithName(repo, to_tag)
-  tag_latest = latestTagID(repo, logger)
+  from_tag = tagWithName(repo, from_tag_name)
+  to_tag = tagWithName(repo, to_tag_name)
+  latest_tag = latestTagID(repo, logger)
 
-  if tag_from
-    logger.info("Found Tag #{tag_from.name} to start from")
+  if from_tag
+    logger.info("Found Tag #{from_tag.name} to start from")
   end
 
-  if tag_to
-    logger.info("Found Tag #{tag_to.name} to end at")
+  if to_tag
+    logger.info("Found Tag #{to_tag.name} to end at")
   end
 
-  if tag_latest
-    logger.info("Latest Tag found: #{tag_latest.name}")
+  if latest_tag
+    logger.info("Latest Tag found: #{latest_tag.name}")
   end
 
   if generate_complete && repo.tags.count > 0
@@ -78,15 +78,15 @@ class Changelog
       end
     else
       # From which commit should the log be followed? Will default to head
-      commit_from = (tag_from && tag_from.target) || commit(repo, tag_from, logger) || repo.head.target
+      commit_from = (from_tag && from_tag.target) || commit(repo, from_tag, logger) || repo.head.target
 
       # To which commit should the log be followed? Will default to the latest tag
-      commit_to = (tag_to && tag_to.target) || commit(repo, tag_to, logger) || tag_latest && (tag_latest.target)
+      commit_to = (to_tag && to_tag.target) || commit(repo, to_tag, logger) || latest_tag && (latest_tag.target)
 
 
       changes = searchGitLog(repo, commit_from, commit_to, scope, logger)
       # Create the changelog
-      log = Changelog.new(changes, tag_from, tag_to || tag_latest, commit_from, commit_to)
+      log = Changelog.new(changes, from_tag, to_tag || latest_tag, commit_from, commit_to)
 
       # Print the changelog
       if format == "md"
