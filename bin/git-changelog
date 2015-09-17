@@ -10,6 +10,7 @@ Commit messages are parsed for lines of the following format:
 `* fix: [<scope(optional)>] <description>`
 `* feat: [<scope(optional)>] <description>`
 `* gui: [<scope(optional)>] <description>`
+`* refactoring: [<scope(optional)>] <description>`
 
 The descriptions are collected and printed as changelog.
 
