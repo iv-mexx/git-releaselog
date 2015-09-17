@@ -8,10 +8,12 @@ class Change
   FIX = 1
   FEAT = 2
   GUI = 3
+  REFACTORING = 4
 
-  TOKEN_FIX = "* fix: "
-  TOKEN_FEAT = "* feat: "
-  TOKEN_GUI = "* gui: "
+  TOKEN_FIX = "* fix:"
+  TOKEN_FEAT = "* feat:"
+  TOKEN_GUI = "* gui:"
+  TOKEN_REFACTORING = "* refactoring:"
 
   def initialize(type, note)
     @type = type
@@ -33,6 +35,8 @@ class Change
       self.new(Change::FIX, line.split(Change::TOKEN_FIX).last).check_scope(scope)
     elsif line.start_with? Change::TOKEN_GUI
       self.new(Change::GUI, line.split(Change::TOKEN_GUI).last).check_scope(scope)
+    elsif line.start_with? Change::TOKEN_REFACTORING
+      self.new(Change::REFACTORING, line.split(Change::TOKEN_REFACTORING).last).check_scope(scope)
     else
       nil
     end
@@ -62,10 +66,20 @@ class Changelog
     @fixes = changes.select{ |c| c.type == Change::FIX }
     @features = changes.select{ |c| c.type == Change::FEAT }
     @gui_changes = changes.select{ |c| c.type == Change::GUI }
+    @refactorings = changes.select{ |c| c.type == Change::REFACTORING }
     @tag_from = tag_from
     @tag_to = tag_to
     @commit_from = from_commit
     @commit_to = to_commit
+  end
+
+  def changes
+    {
+      fixes: @fixes.map{|c| c.note},
+      features: @features.map{|c| c.note},
+      gui_changes: @gui_changes.map{|c| c.note},
+      refactorings: @refactorings.map{|c| c.note}
+    }
   end
 
   def to_slack
@@ -77,8 +91,8 @@ class Changelog
       str << "Unreleased"
     end
 
-    if @commit_to
-      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    if @commit_from
+      str << " (_#{@commit_from.time.strftime("%d.%m.%Y")}_)"
     end
     str << "\n"
 
@@ -97,6 +111,11 @@ class Changelog
       str << @gui_changes.map{|c| "\t- #{c.note}"}.join("\n")
     end
 
+    if @refactorings.count > 0
+      str << "\n\n*REFACTORING*\n"
+      str << @refactorings.map{|c| "\t- #{c.note}"}.join("\n")
+    end
+
     str << "\n"
     str    
   end
@@ -110,8 +129,8 @@ class Changelog
       str << "## Unreleased"
     end
 
-    if @commit_to
-      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    if @commit_from
+      str << " (_#{@commit_from.time.strftime("%d.%m.%Y")}_)"
     end
     str << "\n"
 
@@ -128,6 +147,11 @@ class Changelog
     if @gui_changes.count > 0
       str << "\n\n*GUI*\n"
       str << @gui_changes.map{|c| "* #{c.note}"}.join("\n")
+    end
+
+    if @refactorings.count > 0
+      str << "\n\n*REFACTORING*\n"
+      str << @refactorings.map{|c| "* #{c.note}"}.join("\n")
     end
 
     str << "\n"
@@ -179,10 +203,10 @@ def searchGitLog(repo, commit_from, commit_to, scope, logger)
   # Initialize a walker that walks through the commits from the <from-commit> to the <to-commit>
   walker = Rugged::Walker.new(repo)
   walker.sorting(Rugged::SORT_DATE)
-  walker.push(commit_from)
-  commit_to.parents.each do |parent|
+  walker.push(commit_to)
+  commit_from.parents.each do |parent|
     walker.hide(parent)
-  end unless commit_to == nil
+  end unless commit_from == nil
 
   # Parse all commits and extract changes
   changes = walker.map{ |c| parseCommit(c, scope, logger)}.reduce(:+) || []

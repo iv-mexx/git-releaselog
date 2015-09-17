@@ -10,19 +10,20 @@ Commit messages are parsed for lines of the following format:
 `* fix: [<scope(optional)>] <description>`
 `* feat: [<scope(optional)>] <description>`
 `* gui: [<scope(optional)>] <description>`
+`* refactoring: [<scope(optional)>] <description>`
 
 The descriptions are collected and printed as changelog.
 
 Usage:
 #{__FILE__} [--complete][--debug][--format=<format>][--scope=<scope>]
-#{__FILE__} <from-commit> [--debug][--format=<format>][--scope=<scope>]
-#{__FILE__} <from-commit> <to-commit> [--debug][--format=<format>][--scope=<scope>]
+#{__FILE__} <from-tag> [--debug][--format=<format>][--scope=<scope>]
+#{__FILE__} <from-tag> <to-tag> [--debug][--format=<format>][--scope=<scope>]
 #{__FILE__} -h | --help
 #{__FILE__} --version
 
 Options:
-from-commit       From which commit should the log be followed? Will default to head
-to-commit         To which commit should the log be followed? Will default to the latest tag
+from-tag          Name of the tag from which should the log be generated. Will default to the latest tag
+to-tag            Name of the tag to which the log should be generated. Has to be newer than `from-tag`. Will default to head
 --scope=<scope>   The scope. Will only include changelog entries with that scope or without scope.
 --format=<format> The format in which the output should be generated. Currently supports 'slack' and 'md' (for markdown)
 --complete        Traverses the whole git history and generates a changelog for all tags
@@ -33,7 +34,7 @@ DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.4.1')
+  args =  Docopt::docopt(doc, version: '0.5.0')
 rescue Docopt::Exit => e
   puts e.message
   exit
@@ -41,8 +42,8 @@ end
 
 puts Changelog.generate_changelog(
   repo_path: ".",
-  from_tag: args["<from-commit>"],
-  to_tag: args["<to-commit>"],
+  from_tag: args["<from-tag>"],
+  to_tag: args["<to-tag>"],
   scope: args["--scope"],
   format: args["--format"] || "slack",
   generate_complete: args["--complete"],
