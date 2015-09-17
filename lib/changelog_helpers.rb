@@ -85,8 +85,8 @@ class Changelog
       str << "Unreleased"
     end
 
-    if @commit_to
-      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    if @commit_from
+      str << " (_#{@commit_from.time.strftime("%d.%m.%Y")}_)"
     end
     str << "\n"
 
@@ -118,8 +118,8 @@ class Changelog
       str << "## Unreleased"
     end
 
-    if @commit_to
-      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    if @commit_from
+      str << " (_#{@commit_from.time.strftime("%d.%m.%Y")}_)"
     end
     str << "\n"
 
