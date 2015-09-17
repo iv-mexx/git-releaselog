@@ -5,8 +5,8 @@ require "logger"
 class Changelog
   def self.generate_changelog(options = {})
   repo_path = options.fetch(:repo_path, '.')
-  from_tag_name = options.fetch(:from_tag, nil)
-  to_tag_name = options.fetch(:to_tag, nil)
+  from_ref_name = options.fetch(:from_ref, nil)
+  to_ref_name = options.fetch(:to_ref, nil)
   scope = options.fetch(:scope, nil)
   format = options.fetch(:format, 'slack')
   generate_complete = options.fetch(:generate_complete, false)
@@ -26,16 +26,16 @@ class Changelog
   end
 
   # Find if we're operating on tags
-  from_tag = tagWithName(repo, from_tag_name)
-  to_tag = tagWithName(repo, to_tag_name)
+  from_ref = tagWithName(repo, from_ref_name)
+  to_ref = tagWithName(repo, to_ref_name)
   latest_tag = latestTagID(repo, logger)
 
-  if from_tag
-    logger.info("Found Tag #{from_tag.name} to start from")
+  if from_ref
+    logger.info("Found Tag #{from_ref.name} to start from")
   end
 
-  if to_tag
-    logger.info("Found Tag #{to_tag.name} to end at")
+  if to_ref
+    logger.info("Found Tag #{to_ref.name} to end at")
   end
 
   if latest_tag
@@ -77,16 +77,16 @@ class Changelog
         logger.error("Unknown Format: `#{format}`")
       end
     else
-      # From which commit should the log be followed? Will default to head
-      commit_from = (from_tag && from_tag.target) || commit(repo, from_tag, logger) || latest_tag && (latest_tag.target)
+      # From which commit should the log be followed? Will default to the latest tag
+      commit_from = (from_ref && from_ref.target) || commit(repo, from_ref, logger) || latest_tag && (latest_tag.target)
 
-      # To which commit should the log be followed? Will default to the latest tag
-      commit_to = (to_tag && to_tag.target) || commit(repo, to_tag, logger) || repo.head.target
+      # To which commit should the log be followed? Will default to HEAD
+      commit_to = (to_ref && to_ref.target) || commit(repo, to_ref, logger) || repo.head.target
 
 
       changes = searchGitLog(repo, commit_from, commit_to, scope, logger)
       # Create the changelog
-      log = Changelog.new(changes, from_tag, to_tag || latest_tag, commit_from, commit_to)
+      log = Changelog.new(changes, from_ref, to_ref || latest_tag, commit_from, commit_to)
 
       # Print the changelog
       if format == "md"
