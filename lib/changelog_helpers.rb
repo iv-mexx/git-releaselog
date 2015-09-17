@@ -68,6 +68,14 @@ class Changelog
     @commit_to = to_commit
   end
 
+  def changes
+    {
+      fixes: @fixes.map{|c| c.note},
+      features: @features.map{|c| c.note},
+      gui_changes: @gui_changes.map{|c| c.note}
+    }
+  end
+
   def to_slack
     str = ""
 
@@ -77,8 +85,8 @@ class Changelog
       str << "Unreleased"
     end
 
-    if @commit_to
-      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    if @commit_from
+      str << " (_#{@commit_from.time.strftime("%d.%m.%Y")}_)"
     end
     str << "\n"
 
@@ -110,8 +118,8 @@ class Changelog
       str << "## Unreleased"
     end
 
-    if @commit_to
-      str << " (_#{@commit_to.time.strftime("%d.%m.%Y")}_)"
+    if @commit_from
+      str << " (_#{@commit_from.time.strftime("%d.%m.%Y")}_)"
     end
     str << "\n"
 
