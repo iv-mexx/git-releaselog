@@ -17,7 +17,7 @@ class Change
 
   def initialize(type, note)
     @type = type
-    @note = note
+    @note = note.strip
   end
 
   def type
