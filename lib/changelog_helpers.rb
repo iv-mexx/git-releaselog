@@ -77,7 +77,7 @@ class Changelog
     {
       fixes: @fixes.map{|c| c.note},
       features: @features.map{|c| c.note},
-      gui_changes: @gui_changes.map{|c| c.note}
+      gui_changes: @gui_changes.map{|c| c.note},
       refactorings: @refactorings.map{|c| c.note}
     }
   end
