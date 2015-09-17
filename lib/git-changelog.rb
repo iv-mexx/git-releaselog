@@ -93,6 +93,8 @@ class Changelog
         log.to_md
       elsif format == "slack"
         log.to_slack
+      elsif format == "raw"
+        log
       else
         logger.error("Unknown Format: `#{format}`")
       end

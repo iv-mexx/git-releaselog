@@ -68,6 +68,14 @@ class Changelog
     @commit_to = to_commit
   end
 
+  def changes
+    {
+      fixes: @fixes.map{|c| c.note},
+      features: @features.map{|c| c.note},
+      gui_changes: @gui_changes.map{|c| c.note}
+    }
+  end
+
   def to_slack
     str = ""
 
