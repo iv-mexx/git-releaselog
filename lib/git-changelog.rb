@@ -78,10 +78,10 @@ class Changelog
       end
     else
       # From which commit should the log be followed? Will default to head
-      commit_from = (from_tag && from_tag.target) || commit(repo, from_tag, logger) || repo.head.target
+      commit_from = (from_tag && from_tag.target) || commit(repo, from_tag, logger) || latest_tag && (latest_tag.target)
 
       # To which commit should the log be followed? Will default to the latest tag
-      commit_to = (to_tag && to_tag.target) || commit(repo, to_tag, logger) || latest_tag && (latest_tag.target)
+      commit_to = (to_tag && to_tag.target) || commit(repo, to_tag, logger) || repo.head.target
 
 
       changes = searchGitLog(repo, commit_from, commit_to, scope, logger)
