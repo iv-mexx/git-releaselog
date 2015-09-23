@@ -1,6 +1,6 @@
-# 
+#
 # Helper Functions for git-changelog script
-# 
+#
 
 # A class for representing a change
 # A change can have a type (fix or feature) and a note describing the change
@@ -44,7 +44,7 @@ class Change
 
   def check_scope(scope = nil)
     # If no scope is requested or the change has no scope include this change unchanged
-    return self unless scope 
+    return self unless scope
     change_scope = /^\s*\[\w+\]/.match(@note)
     return self unless change_scope
 
@@ -52,114 +52,14 @@ class Change
       #  Change has the scope that is requested, strip the scope from the change note
       @note = change_scope.post_match.strip
       return self
-    else 
+    else
       #  Change has a different scope than requested
       return nil
     end
   end
 end
 
-# A class for representing a changelog consisting of several changes
-# over a certain timespan (between two commits)
-class Changelog
-  def initialize(changes, tag_from = nil, tag_to = nil, from_commit = nil, to_commit = nil)
-    @fixes = changes.select{ |c| c.type == Change::FIX }
-    @features = changes.select{ |c| c.type == Change::FEAT }
-    @gui_changes = changes.select{ |c| c.type == Change::GUI }
-    @refactorings = changes.select{ |c| c.type == Change::REFACTORING }
-    @tag_from = tag_from
-    @tag_to = tag_to
-    @commit_from = from_commit
-    @commit_to = to_commit
-  end
-
-  def changes
-    {
-      fixes: @fixes.map{|c| c.note},
-      features: @features.map{|c| c.note},
-      gui_changes: @gui_changes.map{|c| c.note},
-      refactorings: @refactorings.map{|c| c.note}
-    }
-  end
-
-  def to_slack
-    str = ""
-
-    if @tag_from && @tag_from.name 
-      str << "Version #{@tag_from.name}"
-    else
-      str << "Unreleased"
-    end
-
-    if @commit_from
-      str << " (_#{@commit_from.time.strftime("%d.%m.%Y")}_)"
-    end
-    str << "\n"
-
-    if @fixes.count > 0
-      str << "*Fixes*\n"
-      str << @fixes.map{|c| "\t- #{c.note}"}.join("\n")
-    end
-
-    if @features.count > 0
-      str << "\n\n*Features*\n"
-      str << @features.map{|c| "\t- #{c.note}"}.join("\n")
-    end
-
-    if @gui_changes.count > 0
-      str << "\n\n*GUI*\n"
-      str << @gui_changes.map{|c| "\t- #{c.note}"}.join("\n")
-    end
-
-    if @refactorings.count > 0
-      str << "\n\n*REFACTORING*\n"
-      str << @refactorings.map{|c| "\t- #{c.note}"}.join("\n")
-    end
-
-    str << "\n"
-    str    
-  end
-
-  def to_md
-    str = ""
-
-    if @tag_from && @tag_from.name 
-      str << "## Version #{@tag_from.name}"
-    else
-      str << "## Unreleased"
-    end
-
-    if @commit_from
-      str << " (_#{@commit_from.time.strftime("%d.%m.%Y")}_)"
-    end
-    str << "\n"
-
-    if @fixes.count > 0
-      str << "*Fixes*\n"
-      str << @fixes.map{|c| "* #{c.note}"}.join("\n")
-    end
-
-    if @features.count > 0
-      str << "\n\n*Features*\n"
-      str << @features.map{|c| "* #{c.note}"}.join("\n")
-    end
-
-    if @gui_changes.count > 0
-      str << "\n\n*GUI*\n"
-      str << @gui_changes.map{|c| "* #{c.note}"}.join("\n")
-    end
-
-    if @refactorings.count > 0
-      str << "\n\n*REFACTORING*\n"
-      str << @refactorings.map{|c| "* #{c.note}"}.join("\n")
-    end
-
-    str << "\n"
-    str    
-  end
-end
-
-# check if the given refString (tag name or commit-hash) exists in the repo 
+# check if the given refString (tag name or commit-hash) exists in the repo
 def commit(repo, refString, logger)
   return unless refString != nil
   begin
