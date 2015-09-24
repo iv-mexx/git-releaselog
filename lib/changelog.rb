@@ -32,7 +32,7 @@ class Changelog
 
   # Display tinformation about the commit the changelog is created for
   def commit_info
-    if @commit_from
+    if @commit_to
       yield(@commit_to.time.strftime("%d.%m.%Y"))
     else
       yield("")

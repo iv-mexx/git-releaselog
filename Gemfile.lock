@@ -30,4 +30,4 @@ PLATFORMS
 
 DEPENDENCIES
   git-changelog!
-  rspec
+  rspec (~> 3.3.0)
