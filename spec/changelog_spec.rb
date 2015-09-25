@@ -2,6 +2,60 @@ require 'spec_helper'
 require 'changelog'
 
 describe Changelog do
+  context "creating and using the changelog" do 
+    let(:change_feature_1) { "Feature 1"}
+    let(:change_feature_2) { "Feature 2"}
+    let(:change_fix_1) { "Fix 1"}
+    let(:change_gui_1) { "GUI 1"}
+    let(:changes) do 
+      [
+        Change.new(Change::FEAT, change_feature_1),
+        Change.new(Change::GUI, change_gui_1),
+        Change.new(Change::FEAT, change_feature_2),
+        Change.new(Change::FIX, change_fix_1),
+      ]
+    end
+    subject { Changelog.new(changes) }
+
+    context "output" do
+      context "slack format" do
+        it "should create some output and contain the given changes" do
+          expect(subject.to_slack).to include(change_feature_1)
+          expect(subject.to_slack).to include(change_feature_2)
+          expect(subject.to_slack).to include(change_fix_1)
+          expect(subject.to_slack).to include(change_gui_1)
+        end        
+      end
+
+      context "markdown format" do
+        it "should create some output and contain the given changes" do
+          expect(subject.to_md).to include(change_feature_1)
+          expect(subject.to_md).to include(change_feature_2)
+          expect(subject.to_md).to include(change_fix_1)
+          expect(subject.to_md).to include(change_gui_1)
+        end        
+      end
+
+      context "raw format" do
+        it "should create some output and contain the given changes" do
+          expect(subject.changes[:feature]).to include(change_feature_1)
+          expect(subject.changes[:feature]).to include(change_feature_2)
+          expect(subject.changes[:fix]).to include(change_fix_1)
+          expect(subject.changes[:gui]).to include(change_gui_1)
+          expect(subject.changes[:refactor]).to eq([])
+        end        
+      end
+
+      it "should return `Unrelease` as tag_info" do
+        expect(subject.tag_info{ |ti| "#{ti}" }).to eq("Unreleased")
+      end
+
+      it "should return an empty string as commit_info" do
+        expect(subject.commit_info{ |ci| "#{ci}" }).to eq("")
+      end
+    end
+  end
+
   context "without git information" do
     subject { Changelog.new([]) }
     let(:changes) do
