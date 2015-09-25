@@ -2,10 +2,10 @@
 # over a certain timespan (between two commits)
 class Changelog
   def initialize(changes, tag_from = nil, tag_to = nil, from_commit = nil, to_commit = nil)
-    @fixes = changes.select { |c| c.type == Change::FIX }
-    @features = changes.select { |c| c.type == Change::FEAT }
-    @gui_changes = changes.select { |c| c.type == Change::GUI }
-    @refactorings = changes.select { |c| c.type == Change::REFACTORING }
+    @changes_fix = changes.select { |c| c.type == Change::FIX }
+    @changes_feat = changes.select { |c| c.type == Change::FEAT }
+    @changes_gui = changes.select { |c| c.type == Change::GUI }
+    @changes_refactor = changes.select { |c| c.type == Change::REFACTOR }
     @tag_from = tag_from
     @tag_to = tag_to
     @commit_from = from_commit
@@ -17,10 +17,10 @@ class Changelog
   # Each type is a list of changes where each change is the note of that change
   def changes
     {
-      fixes: @fixes.map(&:note),
-      features: @features.map(&:note),
-      gui: @gui_changes.map(&:note),
-      refactoring: @refactorings.map(&:note)
+      fix: @changes_fix.map(&:note),
+      feature: @changes_feat.map(&:note),
+      gui: @changes_gui.map(&:note),
+      refactor: @changes_refactor.map(&:note)
     }
   end
 

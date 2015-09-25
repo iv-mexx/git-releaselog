@@ -53,7 +53,7 @@ Currently, the following keynotes are supported
 * `fix`
 * `feat`
 * `gui`
-* `refactoring`
+* `refactor`
 
 ### Scope
 

@@ -8,12 +8,12 @@ class Change
   FIX = 1
   FEAT = 2
   GUI = 3
-  REFACTORING = 4
+  REFACTOR = 4
 
   TOKEN_FIX = "* fix:"
   TOKEN_FEAT = "* feat:"
   TOKEN_GUI = "* gui:"
-  TOKEN_REFACTORING = "* refactoring:"
+  TOKEN_REFACTOR = "* refactor:"
 
   def initialize(type, note)
     @type = type
@@ -40,8 +40,8 @@ class Change
       self.new(Change::FIX, line.split(Change::TOKEN_FIX).last).check_scope(scope)
     elsif line.start_with? Change::TOKEN_GUI
       self.new(Change::GUI, line.split(Change::TOKEN_GUI).last).check_scope(scope)
-    elsif line.start_with? Change::TOKEN_REFACTORING
-      self.new(Change::REFACTORING, line.split(Change::TOKEN_REFACTORING).last).check_scope(scope)
+    elsif line.start_with? Change::TOKEN_REFACTOR
+      self.new(Change::REFACTOR, line.split(Change::TOKEN_REFACTOR).last).check_scope(scope)
     else
       nil
     end
