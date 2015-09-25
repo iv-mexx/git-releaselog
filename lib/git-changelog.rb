@@ -1,5 +1,6 @@
 require "rugged"
 require "changelog_helpers"
+require "changelog"
 require "logger"
 
 class Changelog
@@ -89,11 +90,12 @@ class Changelog
       log = Changelog.new(changes, from_ref, to_ref || latest_tag, commit_from, commit_to)
 
       # Print the changelog
-      if format == "md"
+      case format
+      when "md"
         log.to_md
-      elsif format == "slack"
+      when "slack"
         log.to_slack
-      elsif format == "raw"
+      when "raw"
         log
       else
         logger.error("Unknown Format: `#{format}`")

@@ -6,10 +6,11 @@ Gem::Specification.new do |s|
   s.description = "Write your changelog as you go into your commit messages. This tool generates a useful changelog from marked lines in your git commit messages"
   s.authors     = ["Markus Chmelar"]
   s.email       = 'markus.chmelar@innovaptor.com'
-  s.files       = ["bin/git-changelog","lib/changelog_helpers.rb","lib/git-changelog.rb"]
+  s.files       = ["bin/git-changelog","lib/changelog_helpers.rb","lib/git-changelog.rb", "lib/changelog.rb"]
   s.homepage    = 'https://github.com/iv-mexx/git-changelog'
   s.license     = 'MIT'
   s.executables = "git-changelog"
   s.add_runtime_dependency 'docopt', '~> 0.5', '>= 0.5.0'
-  s.add_runtime_dependency 'rugged'
+  s.add_runtime_dependency 'rugged', '>= 0.23.0'
+  s.add_development_dependency 'rspec', '~> 3.3.0'
 end
