@@ -28,6 +28,11 @@ class Change
     @note
   end
 
+  # Parse a single line as a `Change` entry
+  # If the line is formatte correctly as a change entry, a corresponding `Change` object will be created and returned,
+  # otherwise, nil will be returned.
+  # 
+  # The additional scope can be used to skip changes of another scope. Changes without scope will always be included.
   def self.parse(line, scope = nil)
     if line.start_with? Change::TOKEN_FEAT
       self.new(Change::FEAT, line.split(Change::TOKEN_FEAT).last).check_scope(scope)
@@ -42,14 +47,16 @@ class Change
     end
   end
 
+  # Checks the scope of the `Change` and the change out if the scope does not match.
   def check_scope(scope = nil)
     # If no scope is requested or the change has no scope include this change unchanged
     return self unless scope
     change_scope = /^\s*\[\w+\]/.match(@note)
     return self unless change_scope
 
+    # change_scope is a string of format `[scope]`, need to strip the `[]` to compare the scope
     if change_scope[0][1..-2] == scope
-      #  Change has the scope that is requested, strip the scope from the change note
+      #  Change has the scope that is requested, strip the whole scope scope from the change note
       @note = change_scope.post_match.strip
       return self
     else
@@ -97,6 +104,7 @@ def parseCommit(commit, scope, logger)
   lines.map{|line| Change.parse(line, scope)}.reject(&:nil?)
 end
 
+# Searches the commit log messages of all commits between `commit_from` and `commit_to` for changes
 def searchGitLog(repo, commit_from, commit_to, scope, logger)
   logger.info("Traversing git tree from commit #{commit_from.oid} to commit #{commit_to && commit_to.oid}")
 

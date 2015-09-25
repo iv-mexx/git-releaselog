@@ -12,6 +12,9 @@ class Changelog
     @commit_to = to_commit
   end
 
+  # Returns a hash of the changes.
+  # The changes are grouped by change type into `fix`, `feature`, `gui`, `refactor`
+  # Each type is a list of changes where each change is the note of that change
   def changes
     {
       fixes: @fixes.map(&:note),
@@ -81,6 +84,7 @@ class Changelog
     str
   end
 
+  # Render the Changelog with Slack Formatting
   def to_slack
     str = ""
 
@@ -95,6 +99,7 @@ class Changelog
     str
   end
 
+  # Render the Changelog with Markdown Formatting
   def to_md
     str = ""
 
