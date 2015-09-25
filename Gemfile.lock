@@ -3,7 +3,7 @@ PATH
   specs:
     git-changelog (0.5.1)
       docopt (~> 0.5, >= 0.5.0)
-      rugged
+      rugged (>= 0.23.0)
 
 GEM
   remote: https://rubygems.org/

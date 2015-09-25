@@ -11,6 +11,6 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
   s.executables = "git-changelog"
   s.add_runtime_dependency 'docopt', '~> 0.5', '>= 0.5.0'
-  s.add_runtime_dependency 'rugged'
+  s.add_runtime_dependency 'rugged', '>= 0.23.0'
   s.add_development_dependency 'rspec', '~> 3.3.0'
 end
