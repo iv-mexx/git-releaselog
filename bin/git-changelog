@@ -10,7 +10,7 @@ Commit messages are parsed for lines of the following format:
 `* fix: [<scope(optional)>] <description>`
 `* feat: [<scope(optional)>] <description>`
 `* gui: [<scope(optional)>] <description>`
-`* refactoring: [<scope(optional)>] <description>`
+`* refactor: [<scope(optional)>] <description>`
 
 The descriptions are collected and printed as changelog.
 
@@ -34,7 +34,7 @@ DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.5.1')
+  args =  Docopt::docopt(doc, version: '0.6.0')
 rescue Docopt::Exit => e
   puts e.message
   exit
