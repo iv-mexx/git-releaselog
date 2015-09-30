@@ -49,7 +49,7 @@ class Changelog
     sorted_tags.each_with_index do |tag, index|
       if index == 0
           # First Interval: Generate from start of Repo to the first Tag
-          changes = searchGitLog(repo, tag.target, nil, scope, logger)
+          changes = searchGitLog(repo, tag.target, repo.head.target, scope, logger)
           logger.info("First Tag: #{tag.name}: #{changes.count} changes")
           changeLogs += [Changelog.new(changes, tag, nil, nil, nil)]
         else
@@ -73,7 +73,7 @@ class Changelog
       if format == "md"
         changeLogs.reverse.map { |log| "#{log.to_md}\n" }
       elsif format == "slack"
-        changeLogs.map { |log| "#{log.to_slack}\n" }
+        changeLogs.reduce("") { |log, version| log + "1) #{version.to_slack}\n" }
       else
         logger.error("Unknown Format: `#{format}`")
       end
