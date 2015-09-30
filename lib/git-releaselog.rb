@@ -3,8 +3,8 @@ require "changelog_helpers"
 require "changelog"
 require "logger"
 
-class Changelog
-  def self.generate_changelog(options = {})
+class Releaselog
+  def self.generate_releaselog(options = {})
   repo_path = options.fetch(:repo_path, '.')
   from_ref_name = options.fetch(:from_ref, nil)
   to_ref_name = options.fetch(:to_ref, nil)
