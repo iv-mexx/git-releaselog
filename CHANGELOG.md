@@ -13,6 +13,7 @@
 
 ## 0.6.0
 
+
 *Fix*
 * During changelog generation, use `commit_to` and `tag_to` instead of `commit_from` and `tag_from` to make an execution like `git-changelog 0.4.0 --format=slack` display information about the version being currently released
 
