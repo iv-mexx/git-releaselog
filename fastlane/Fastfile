@@ -104,7 +104,7 @@ lane :deploy do
       tag_name: version_next,
       description: update_releaselog,
       commitish: "master",
-      is_draft: true
+      is_draft: false
     )
   end
 
