@@ -1,3 +1,6 @@
+[![Gem Version](https://badge.fury.io/rb/git-releaselog.svg)](http://badge.fury.io/rb/git-releaselog)
+[![Build Status](https://travis-ci.org/iv-mexx/git-releaselog.svg?branch=master)](https://travis-ci.org/iv-mexx/git-releaselog)
+
 # git-releaselog
 
 This tool generates release log from a git repository.
