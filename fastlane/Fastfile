@@ -109,7 +109,7 @@ lane :deploy do
   end
 
   # Update the gem
-  # update_gem(tool_name: tool_name, version_next: version_next)
+  update_gem(tool_name: tool_name, version_next: version_next)
 end
 
 desc "Build and push the current version gem"
@@ -121,8 +121,8 @@ lane :update_gem do |options|
   # ERROR:  While executing gem ... (Gem::InvalidSpecificationException)
   #   ["../bin/git-releaselog.rb", "bin/git-releaselog"] are not files
   # Even though the commands work... just leave this out for now and deploy the gems manually :(
-  sh "gem build ../#{tool_name}.gemspec"
-  sh "gem push ../#{tool_name}-#{version_next}.gem"
+  sh "cd .. && gem build #{tool_name}.gemspec"
+  sh "cd .. && gem push #{tool_name}-#{version_next}.gem"
 end
 
 after_all do |lane|
