@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description = "Write your releaselog as part of your usual commit messages. This tool generates a useful releaselog from marked lines in your git commit messages"
   s.authors     = ["Markus Chmelar"]
   s.email       = "markus.chmelar@innovaptor.com"
-  s.files       = ["bin/git-releaselog.rb", "bin/git-releaselog/change.rb", "bin/git-releaselog/changelog.rb", "bin/git-releaselog/changelog_helpers.rb", "bin/git-releaselog/version.rb", "bin/git-releaselog.rb"]
+  s.files       = Dir["lib/**/*"] + %w(bin/git-releaselog README.md LICENSE)
   s.homepage    = "https://github.com/iv-mexx/git-releaselog"
   s.license     = "MIT"
   s.executables = "git-releaselog"
