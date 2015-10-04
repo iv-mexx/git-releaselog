@@ -20,6 +20,22 @@ show up in the releaselog.
 These [keywords](#markup) can be used in commit messages. See the [Example](#example)
 section.
 
+## Installation
+
+```
+	gem install git-releaselog
+```
+
+#### Troubleshooting
+
+If you are having problems with installing the [`rugged`](https://github.com/libgit2/rugged) dependency, maybe you need to install `cmake`:
+
+```
+	brew install cmake
+```
+
+Check out the [Install Instructions](https://github.com/libgit2/rugged#install) of the `rugged` gem.
+
 ## Usage
 
 The default use is to generate the releaselog starting from the last release 
