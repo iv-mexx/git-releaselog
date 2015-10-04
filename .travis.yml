@@ -7,6 +7,7 @@ script: bundle exec rspec spec
 notifications:
   email:
     recipients:
+      - lukas.nagl@innovaptor.com
       - markus.chmelar@innovaptor.com
     on_failure: change
     on_success: never
