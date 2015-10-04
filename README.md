@@ -151,14 +151,11 @@ git-releaselog d41dac9 fa40cdb --format md
 ```
 
 ```
-## Unreleased (_26.05.2015_)
-*Feature*
+## Unreleased
+(_26.05.2015_)
+
+#### Feature
 * use the `--complete` parameter to generate a complete changelog over all tags
 ```
-
-
-
-
-
 
 [releaselog]: CHANGELOG.md
