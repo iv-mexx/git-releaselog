@@ -12,13 +12,11 @@ def commit(repo, refString, logger)
   begin
     repo.lookup(refString)
   rescue Rugged::OdbError => e
-    puts ("Commit `#{refString}` does not exist in Repo")
-    logger.error(e.message)
-    exit
+    logger.error("Searching for commit with ref #{refString} failure: #{e.message}")
+    return nil
   rescue Exception => e
-    puts ("`#{refString}` is not a valid OID")
-    logger.error(e.message)
-    exit
+    logger.error("Searching for commit with ref #{refString} failure: #{e.message}")
+    return nil
   end
 end
 
