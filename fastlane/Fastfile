@@ -107,6 +107,8 @@ lane :deploy do
       is_draft: false
     )
   end
+  git_pull
+
 
   # Update the gem
   update_gem(tool_name: tool_name, version_next: version_next)
