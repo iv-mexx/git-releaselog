@@ -47,17 +47,23 @@ class Releaselog
     sorted_tags = repo.tags.sort { |t1, t2| t1.target.time <=> t2.target.time }
     changeLogs = []
     sorted_tags.each_with_index do |tag, index|
+      logger.error("Tag #{tag.name} with date #{tag.target.time}")
+
       if index == 0
           # First Interval: Generate from start of Repo to the first Tag
-          changes = searchGitLog(repo, tag.target, repo.head.target, scope, logger)
-          logger.info("First Tag: #{tag.name}: #{changes.count} changes")
+          changes = searchGitLog(repo, nil, tag.target, scope, logger)
           changeLogs += [Changelog.new(changes, tag, nil, nil, nil)]
+
+          logger.info("First Tag: #{tag.name}: #{changes.count} changes")
+          logger.info("Parsing from start of the repo to #{tag.target.oid}")
         else
           # Normal interval: Generate from one Tag to the next Tag
           previousTag = sorted_tags[index-1]
-          changes = searchGitLog(repo, tag.target, previousTag.target, scope, logger)
-          logger.info("Tag #{previousTag.name} to #{tag.name}: #{changes.count} changes")
+          changes = searchGitLog(repo, previousTag.target, tag.target, scope, logger)
           changeLogs += [Changelog.new(changes, tag, previousTag, nil, nil)]
+
+          logger.info("Tag #{previousTag.name} to #{tag.name}: #{changes.count} changes")
+          logger.info("Parsing from #{tag.target.oid} to #{previousTag.target.oid}")
         end
       end
 
