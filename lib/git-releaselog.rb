@@ -89,10 +89,12 @@ module Releaselog
         end
       else
         # From which commit should the log be followed? Will default to the latest tag
-        commit_from = (from_ref && from_ref.target) || commit(repo, from_ref, logger) || latest_tag && (latest_tag.target)
+        commit_from = (from_ref && from_ref.target) || commit(repo, from_ref_name, logger) || latest_tag && (latest_tag.target)
+        logger.info("Commit-From: #{commit_from.oid}")
 
         # To which commit should the log be followed? Will default to HEAD
-        commit_to = (to_ref && to_ref.target) || commit(repo, to_ref, logger) || repo.head.target
+        commit_to = (to_ref && to_ref.target) || commit(repo, to_ref_name, logger) || repo.head.target
+        logger.info("Commit-To: #{commit_to.oid}")
 
 
         changes = searchGitLog(repo, commit_from, commit_to, scope, logger)

@@ -6,6 +6,8 @@ include Releaselog
 
 # check if the given refString (tag name or commit-hash) exists in the repo
 def commit(repo, refString, logger)
+  logger.info("Searching for ref #{refString} in repo")
+
   return unless refString != nil
   begin
     repo.lookup(refString)
