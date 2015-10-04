@@ -99,7 +99,7 @@ module Releaselog
 
         changes = searchGitLog(repo, commit_from, commit_to, scope, logger)
         # Create the changelog
-        log = Changelog.new(changes, from_ref, to_ref || latest_tag, commit_from, commit_to)
+        log = Changelog.new(changes, from_ref, to_ref, commit_from, commit_to)
 
         # Print the changelog
         case format
