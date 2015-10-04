@@ -73,7 +73,7 @@ class Releaselog
       if format == "md"
         changeLogs.reverse.map { |log| "#{log.to_md}\n" }
       elsif format == "slack"
-        changeLogs.reduce("") { |log, version| log + "1) #{version.to_slack}\n" }
+        changeLogs.reduce("") { |log, version| log + "#{version.to_slack}\n" }
       else
         logger.error("Unknown Format: `#{format}`")
       end
