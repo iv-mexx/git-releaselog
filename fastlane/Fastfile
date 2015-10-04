@@ -104,7 +104,7 @@ lane :deploy do
   end
 
   # Update the gem
-  sh "gem push ../#{tool_name}-#{version}.gem"
+  sh "gem push ../#{tool_name}-#{version_next}.gem"
 end
 
 after_all do |lane|
