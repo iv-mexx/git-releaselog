@@ -108,7 +108,7 @@ module Releaselog
       str << commit_info { |ci| ci.empty? ? "" : "(_#{ci}_)\n" }
       str << sections(
         changes,
-        -> (header) { "\n*#{header.capitalize}*\n" },
+        -> (header) { "\n#####{header.capitalize}\n" },
         -> (field, _index) { "* #{field}\n" }
       )
 
