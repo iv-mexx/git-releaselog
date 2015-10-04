@@ -145,15 +145,20 @@ Date:   Tue May 26 12:49:00 2015 +0200
 
 Notice, that commit `1f4abe3399891cfd429e5aa474e6c414f7e2b3b2` has an extra line with a `feat` keyword.
 The releaselog for these commits looks like this:
-`git-releaselog fa40cdb d41dac9 --format md`
+
+```
+git-releaselog d41dac9 fa40cdb --format md
+```
 
 ```
 ## Unreleased (_26.05.2015_)
-#### Fixes
-_No new Fixes_
-
-#### Features
-* use the `--complete` parameter to generate a complete releaselog over all tags
+*Feature*
+* use the `--complete` parameter to generate a complete changelog over all tags
 ```
+
+
+
+
+
 
 [releaselog]: CHANGELOG.md
