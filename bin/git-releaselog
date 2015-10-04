@@ -34,13 +34,13 @@ DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.6.0')
+  args =  Docopt::docopt(doc, version: Releaselog::VERSION)
 rescue Docopt::Exit => e
   puts e.message
   exit
 end
 
-puts Releaselog.generate_releaselog(
+puts Releaselog::Releaselog.generate_releaselog(
   repo_path: ".",
   from_ref: args["<from-ref>"],
   to_ref: args["<to-ref>"],
