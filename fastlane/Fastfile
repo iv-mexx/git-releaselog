@@ -103,9 +103,8 @@ lane :deploy do
     )
   end
 
-  # # Update the gem
-  # sh "gem push ../pkg/#{tool_name}-#{version}.gem"
-
+  # Update the gem
+  sh "gem push ../#{tool_name}-#{version}.gem"
 end
 
 after_all do |lane|
