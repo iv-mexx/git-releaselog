@@ -106,12 +106,12 @@ end
 
 # Searches the commit log messages of all commits between `commit_from` and `commit_to` for changes
 def searchGitLog(repo, commit_from, commit_to, scope, logger)
-  logger.info("Traversing git tree from commit #{commit_from.oid} to commit #{commit_to && commit_to.oid}")
+  # logger.info("Traversing git tree from commit #{commit_from.oid} to commit #{commit_to && commit_to ? commit_to.oid : '(no oid)'}")
 
   # Initialize a walker that walks through the commits from the <from-commit> to the <to-commit>
   walker = Rugged::Walker.new(repo)
   walker.sorting(Rugged::SORT_DATE)
-  walker.push(commit_to)
+  walker.push(commit_to) unless commit_to == nil
   commit_from.parents.each do |parent|
     walker.hide(parent)
   end unless commit_from == nil
