@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-require "git-changelog"
+require "git-releaselog"
 require "docopt"
 
 doc = <<DOCOPT
@@ -12,7 +12,7 @@ Commit messages are parsed for lines of the following format:
 `* gui: [<scope(optional)>] <description>`
 `* refactor: [<scope(optional)>] <description>`
 
-The descriptions are collected and printed as changelog.
+The descriptions are collected and printed as releaselog.
 
 Usage:
 #{__FILE__} [--complete][--debug][--format=<format>][--scope=<scope>]
@@ -24,9 +24,9 @@ Usage:
 Options:
 from-ref          Git-Ref from which should the log be generated. Can be a tag-name or commit-hash. Will default to the latest tag
 to-ref            Git-Ref to which the log should be generated. Can be a tag-name or commit-hash. Has to be newer than `from-ref`. Will default to head
---scope=<scope>   The scope. Will only include changelog entries with that scope or without scope.
+--scope=<scope>   The scope. Will only include releaselog entries with that scope or without scope.
 --format=<format> The format in which the output should be generated. Currently supports 'slack' and 'md' (for markdown)
---complete        Traverses the whole git history and generates a changelog for all tags
+--complete        Traverses the whole git history and generates a releaselog for all tags
 -h --help         Show this screen.
 --version         Show version.
 --debug           Show debug output
@@ -34,13 +34,13 @@ DOCOPT
 
 # Parse Commandline Arguments
 begin
-  args =  Docopt::docopt(doc, version: '0.6.0')
+  args =  Docopt::docopt(doc, version: Releaselog::VERSION)
 rescue Docopt::Exit => e
   puts e.message
   exit
 end
 
-puts Changelog.generate_changelog(
+puts Releaselog::Releaselog.generate_releaselog(
   repo_path: ".",
   from_ref: args["<from-ref>"],
   to_ref: args["<to-ref>"],

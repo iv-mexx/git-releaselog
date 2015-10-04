@@ -1,5 +1,7 @@
 require 'spec_helper'
-require 'changelog'
+require 'git-releaselog/changelog'
+
+include Releaselog
 
 describe Changelog do
   context "creating and using the changelog" do 
@@ -47,7 +49,7 @@ describe Changelog do
       end
 
       it "should return `Unrelease` as tag_info" do
-        expect(subject.tag_info{ |ti| "#{ti}" }).to eq("Unreleased")
+        expect(subject.tag_info{ |ti| "#{ti}" }).to include("Unreleased")
       end
 
       it "should return an empty string as commit_info" do
