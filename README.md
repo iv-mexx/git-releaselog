@@ -3,8 +3,7 @@
 
 # git-releaselog
 
-This tool generates release log from a git repository.
-
+This tool generates a release log from a git repository.
 
 Its hard or even impossible to generate good releaselog from an ordinary git log. 
 The git log usually contains very detailed, technical information, targeted at the maintainers of a project. 
@@ -15,7 +14,7 @@ Thats why this tool does not attempt to build a releaselog from normal commit me
 
 These [keywords](#markup) can be used in commit messages. 
 
-As an example, check out [the changelog for this repo][releaselog] which is automatically generated using this tool.
+As an example, check out [the changelog for this repo][releaselog] which is automatically generated using this tool. Furthermore, the git release messages are also generated with this tool, see [this release](https://github.com/iv-mexx/git-releaselog/releases/tag/0.7.0) for example.
 
 ## Installation
 
@@ -107,7 +106,7 @@ This is just what works best for us:
 * Create Merge Requests for merging feature branches back to develop
   * Feature branch / merge request should address specific features / fixes / ...
   * The description of the merge request should contain markup for the releaselog
-  * The description of the merge request should be the commit message of the merge commit (done automatically e.g. by gitlab)
+  * The description of the merge request should be the commit message of the merge commit (done automatically e.g. by gitlab, manually for github!)
 
 The only additional step from our normal workflow is to use special markup for the change log in the description of a merge request. 
 Doing so enables the generation of change logs between arbitrary commits / releases
