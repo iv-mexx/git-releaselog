@@ -33,6 +33,11 @@ lane :bump_version do |options|
     git_commit(path: path,
                message: "chore(project): automatic version bump commit")
     push_to_git_remote
+
+    sh "cd .. && bundle install"
+    git_commit(path: "../Gemfile.lock",
+               message: "chore(project): automatic Gemfile update")
+    push_to_git_remote
   else
     puts "No changes, no Version Bump".red
   end
