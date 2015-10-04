@@ -1,0 +1,176 @@
+# Customise this file, documentation can be found here:
+# https://github.com/KrauseFx/fastlane/tree/master/docs
+# All available actions: https://github.com/KrauseFx/fastlane/blob/master/docs/Actions.md
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "1.30.2"
+
+desc "Runs all the tests"
+lane :test do
+end
+
+desc "Increment the version number of this gem"
+desc "Returns the new version"
+lane :bump_version do |options|
+  path = "./lib/#{tool_name}/version.rb"
+
+  local_version = tool_current_version
+  puts "Local Version: #{local_version}"
+
+  bump_type ||= 'minor' if prompt(text: "New Feature?", boolean: true)
+  bump_type ||= 'patch' if bump_type.nil? && prompt(text: "Bugfix/Improvements?", boolean: true)
+
+  if bump_type
+    version_bump_podspec(path: path, bump_type: bump_type)
+    git_commit(path: path,
+               message: "chore(project): automatic version bump commit")
+    push_to_git_remote
+  else
+    puts "No changes, no Version Bump".red
+  end
+  version_get_podspec(path: path)
+end
+
+desc "Updates the CHANGELOG.md"
+lane :update_changelog do |options|
+  next_version = options[:next_version] || "Unreleased"
+
+  # Create complete Changelog
+  complete_changelog = create_changelog(complete: true, new_tag: next_version)
+
+  changelog = "CHANGELOG.md"
+  File.open("../#{changelog}", 'w') do |file|
+    file.puts complete_changelog
+  end
+
+  if `git status --porcelain`.include?(changelog)
+    path = "./#{changelog}"
+    git_commit(path: path,
+               message: "chore(changelog): update the changelog")
+    push_to_git_remote
+  else
+    puts "Changelog already up to date".green
+  end
+end
+
+desc "Deploy a new version to Github"
+lane :deploy do
+  # Git verification
+  ensure_git_status_clean
+  ensure_git_branch(branch: 'master')
+  git_pull
+  push_to_git_remote
+
+  validate_repo(tool_name: tool_name)
+
+  # Get current Version
+  version_previous = last_git_tag
+  version_next = bump_version
+
+  # Update the CHANGELOG.md
+  update_changelog(next_version: version_next)
+
+  # Create Changelog for this Release
+  update_releaselog = create_changelog(last_tag: version_previous, new_tag: version_next)
+
+  # 1) This header is wrong, it displays the previous tag
+  # 2) If it was right, this header would currently display "Unreleased" which still is not correct / good
+  # TODO: For Github, create an option that simply strips the header instead of "Unreleased"
+  # TODO: For others, create use the "to_tag" option to create the header even if the tag does not exist yet
+  # As Workaround for now: Just remove the first three lines of the changelog
+  update_releaselog = update_releaselog.split("\n")[2..-1].join("\n")
+
+  # Create Github Release
+  github_release = get_github_release(url: github_url, version: version_next)
+  if (github_release || {}).fetch('body', '').length == 0
+    title = prompt(text: 'Title: ')
+
+    github_release = set_github_release(
+      repository_name: github_url(tool: tool_name),
+      name: [version_next, title].join(" "),
+      tag_name: version_next,
+      description: update_releaselog,
+      commitish: "master",
+      is_draft: true
+    )
+  end
+
+  # # Update the gem
+  # sh "gem push ../pkg/#{tool_name}-#{version}.gem"
+
+end
+
+after_all do |lane|
+  # slack(
+  #   message: "Successfully deployed new App Update."
+  # )
+end
+
+error do |lane, exception|
+  # slack(
+  #   message: exception.message,
+  #   success: false
+  # )
+end
+
+#
+# Private Lanes
+#
+
+desc "Returns the tools name"
+private_lane :tool_name do |options|
+  "git-releaselog"
+end
+
+desc "Returns the current version of the tool"
+private_lane :tool_current_version do |options|
+  require "../lib/#{tool_name}/version"
+  module_ref(tool_name: tool_name)::VERSION
+end
+
+desc "Get a reference to the module of this tool"
+desc "This method can be overwritten by the individual Fastfiles of the tools (e.g. PEM)"
+private_lane :module_ref do |options|
+  Object.const_get("Releaselog")
+end
+
+desc "Get the Github-URL of the tool" 
+private_lane :github_url do |options|
+  "iv-mexx/git-releaselog"
+end
+
+desc "Verifies all tests pass and the current state of the repo is valid"
+private_lane :validate_repo do |options|
+  tool_name = options[:tool_name]
+  tool_version = options[:tool_version]
+
+  # Verifying that no debug code is in the code base
+  ensure_no_debug_code(text: "pry", extension: ".rb", path: "./lib/") # debugging code
+  ensure_no_debug_code(text: "TODO", extension: ".rb", path: "./lib/") # TODOs
+  ensure_no_debug_code(text: "now: ", extension: ".rb", path: "./lib/") # rspec focus
+  ensure_no_debug_code(text: "<<<<<<<", extension: ".rb", path: "./lib/") # Merge conflict
+
+  rubocop if File.exist?("../.rubocop.yml") # some project don't yet use rubocop
+
+  # Verifying the --help command
+  binary_path = File.join("..", "bin", tool_name)
+
+  content = sh "#{binary_path} --help" # not using `sh` here as it doesn't go out of the help screen
+  ["--version", tool_name].each do |current|
+    raise "--help missing information: '#{current}'" unless content.include? current
+  end
+
+  # Running ruby things
+  sh "cd .. && bundle install"
+
+  # Run the tests
+  sh "cd .. && rspec"
+end
