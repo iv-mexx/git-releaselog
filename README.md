@@ -49,10 +49,10 @@ Alternatively, you can choose the generate the whole releaselog for the whole re
 
 * `git-releaselog --complete` will search the whole git log and group the changes nicely in sections by existing tags.
 
-To control the markup of the output, you can use these options (the default is slack):
+To control the markup of the output, you can use the `--format` option (the default is slack):
 
-* `--slack` produces output that looks nice when copy/pasted into slack
-* `--md` produces markdown output in reverse order, e.g this repo's [releaselog]
+* `--format slack` produces output that looks nice when copy/pasted into slack
+* `--format md` produces markdown output in reverse order, e.g this repo's [releaselog]
 
 ## Markup
 
@@ -145,7 +145,7 @@ Date:   Tue May 26 12:49:00 2015 +0200
 
 Notice, that commit `1f4abe3399891cfd429e5aa474e6c414f7e2b3b2` has an extra line with a `feat` keyword.
 The releaselog for these commits looks like this:
-`git-releaselog fa40cdb d41dac9 --md`
+`git-releaselog fa40cdb d41dac9 --format md`
 
 ```
 ## Unreleased (_26.05.2015_)
