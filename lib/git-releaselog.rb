@@ -52,27 +52,29 @@ class Releaselog
       if index == 0
           # First Interval: Generate from start of Repo to the first Tag
           changes = searchGitLog(repo, nil, tag.target, scope, logger)
-          changeLogs += [Changelog.new(changes, tag, nil, nil, nil)]
+          changeLogs += [Changelog.new(changes, nil, tag, nil, nil)]
 
-          logger.info("First Tag: #{tag.name}: #{changes.count} changes")
           logger.info("Parsing from start of the repo to #{tag.target.oid}")
+          logger.info("First Tag: #{tag.name}: #{changes.count} changes")
         else
           # Normal interval: Generate from one Tag to the next Tag
           previousTag = sorted_tags[index-1]
           changes = searchGitLog(repo, previousTag.target, tag.target, scope, logger)
-          changeLogs += [Changelog.new(changes, tag, previousTag, nil, nil)]
+          changeLogs += [Changelog.new(changes, previousTag, tag, nil, nil)]
 
-          logger.info("Tag #{previousTag.name} to #{tag.name}: #{changes.count} changes")
           logger.info("Parsing from #{tag.target.oid} to #{previousTag.target.oid}")
+          logger.info("Tag #{previousTag.name} to #{tag.name}: #{changes.count} changes")
         end
       end
 
       if sorted_tags.count > 0
         lastTag = sorted_tags.last
         # Last Interval: Generate from last Tag to HEAD
-        changes = searchGitLog(repo, repo.head.target, lastTag.target, scope, logger)
+        changes = searchGitLog(repo, lastTag.target, repo.head.target, scope, logger)
+        changeLogs += [Changelog.new(changes, lastTag, nil, nil, nil)]
+
+        logger.info("Parsing from #{lastTag.target.oid} to HEAD")
         logger.info("Tag #{lastTag.name} to HEAD: #{changes.count} changes")
-        changeLogs += [Changelog.new(changes, nil, lastTag, nil, nil)]
       end
 
       # Print the changelog

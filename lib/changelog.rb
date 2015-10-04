@@ -27,9 +27,9 @@ class Changelog
   # Display tag information about the tag that the changelog is created for
   def tag_info
     if @tag_to && @tag_to.name
-      yield("#{@tag_to.name}")
+      yield("#{@tag_to.name}\n")
     else
-      yield("Unreleased")
+      yield("Unreleased\n")
     end
   end
 
@@ -104,7 +104,7 @@ class Changelog
     str = ""
 
     str << tag_info { |t| "## #{t}" }
-    str << commit_info { |ci| " (_#{ci}_)" }
+    str << commit_info { |ci| ci.empty? ? "" : "(_#{ci}_)\n" }
     str << sections(
       changes,
       -> (header) { "\n*#{header.capitalize}*\n" },
