@@ -1,6 +1,7 @@
 ## Unreleased
 
 #### Fix
+* searching for commits/tags that don't in the repo now continues with default values
 * When there is no `to_tag`, the release log now correctly displays "Unreleased" again instead of the latest tag name
 * Generating a release log from/to commit hashes now works again
 
