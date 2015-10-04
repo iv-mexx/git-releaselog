@@ -109,8 +109,8 @@ end
 
 desc "Build and push the current version gem"
 lane :update_gem do |options|
-  tool_name = options[:tool_name]
-  version_next = options[:version_next]
+  tool_name = options[:tool_name] || "git-releaselog"
+  version_next = options[:version_next] || "0.7.0"
 
   sh "gem build ../#{tool_name}.gemspec"
   sh "gem push ../#{tool_name}-#{version_next}.gem"
