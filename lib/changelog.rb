@@ -89,7 +89,7 @@ class Changelog
     str = ""
 
     str << tag_info { |t| t }
-    str << commit_info { |ci| " (_#{ci}_)\n" }
+    str << commit_info { |ci| ci.empty? ? "" : "(_#{ci}_)\n"  }
     str << sections(
       changes,
       -> (header) { "*#{header.capitalize}*\n" },
