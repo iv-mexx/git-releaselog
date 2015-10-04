@@ -72,8 +72,8 @@ lane :deploy do
   validate_repo(tool_name: tool_name)
 
   # Get current Version
-  version_previous = last_git_tag
-  version_next = bump_version
+  version_previous = last_git_tag.strip
+  version_next = bump_version.strip
 
   # Update the CHANGELOG.md
   update_changelog(next_version: version_next)

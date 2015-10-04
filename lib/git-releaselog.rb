@@ -8,8 +8,8 @@ module Releaselog
   class Releaselog
     def self.generate_releaselog(options = {})
     repo_path = options.fetch(:repo_path, '.')
-    from_ref_name = options.fetch(:from_ref, nil)
-    to_ref_name = options.fetch(:to_ref, nil)
+    from_ref_name = options.fetch(:from_ref, nil).strip
+    to_ref_name = options.fetch(:to_ref, nil).strip
     scope = options.fetch(:scope, nil)
     format = options.fetch(:format, 'slack')
     generate_complete = options.fetch(:generate_complete, false)
