@@ -5,25 +5,22 @@
 
 This tool generates release log from a git repository.
 
-Generally, I don't beliefe that its possible to generate good releaselog
-from an ordinary git log. 
-The git log usually contains very detailed, technical information, targeted
-at the maintainers of a project. 
 
-In contrast, the releaselog should be targetet at the users of a project and 
-should describe changes relevant to those users at a higher abstraction.
+Its hard or even impossible to generate good releaselog from an ordinary git log. 
+The git log usually contains very detailed, technical information, targeted at the maintainers of a project. 
 
-Thats why this tool does not attempt to build a releaselog from normal commit
-messages but instead requires special keywords to mark notes that should 
-show up in the releaselog.
+In contrast, the releaselog should be targetet at the users of a project and should describe changes relevant to those users at a higher abstraction.
 
-These [keywords](#markup) can be used in commit messages. See the [Example](#example)
-section.
+Thats why this tool does not attempt to build a releaselog from normal commit messages but instead requires special keywords to mark notes that should show up in the releaselog.
+
+These [keywords](#markup) can be used in commit messages. 
+
+As an example, check out [the changelog for this repo][releaselog] which is automatically generated using this tool.
 
 ## Installation
 
 ```
-	gem install git-releaselog
+gem install git-releaselog
 ```
 
 #### Troubleshooting
@@ -31,7 +28,7 @@ section.
 If you are having problems with installing the [`rugged`](https://github.com/libgit2/rugged) dependency, maybe you need to install `cmake`:
 
 ```
-	brew install cmake
+brew install cmake
 ```
 
 Check out the [Install Instructions](https://github.com/libgit2/rugged#install) of the `rugged` gem.
