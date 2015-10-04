@@ -49,7 +49,7 @@ module Releaselog
       sorted_tags = repo.tags.sort { |t1, t2| t1.target.time <=> t2.target.time }
       changeLogs = []
       sorted_tags.each_with_index do |tag, index|
-        logger.error("Tag #{tag.name} with date #{tag.target.time}")
+        logger.info("Tag #{tag.name} with date #{tag.target.time}")
 
         if index == 0
             # First Interval: Generate from start of Repo to the first Tag
