@@ -1,5 +1,7 @@
 require 'spec_helper'
-require 'changelog'
+require 'git-releaselog/changelog'
+
+include Releaselog
 
 describe Changelog do
   context "creating and using the changelog" do 
