@@ -104,7 +104,26 @@ lane :deploy do
   end
 
   # Update the gem
+  update_gem(tool_name: tool_name, version_next: version_next)
+end
+
+desc "Build and push the current version gem"
+lane :update_gem do |options|
+  tool_name = options[:tool_name]
+  version_next = options[:version_next]
+
+  sh "gem build ../#{tool_name}.gemspec"
   sh "gem push ../#{tool_name}-#{version_next}.gem"
+
+  if `git status --porcelain`.include?(changelog)
+    path = "./#{changelog}"
+    git_commit(path: path,
+               message: "chore(changelog): update the changelog")
+    push_to_git_remote
+  else
+    puts "Changelog already up to date".green
+  end
+
 end
 
 after_all do |lane|
