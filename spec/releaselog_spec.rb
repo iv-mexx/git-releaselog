@@ -117,5 +117,31 @@ describe Releaselog do
         expect(subject).to include("0.7.1")
       end
     end
+
+    context "using a scope" do
+      describe "no scope" do 
+      end
+
+      describe "`testscope1`" do
+        let(:arguments) { arguments = {"<from-ref>" => "932dc90", "<to-ref>" => "HEAD", "--scope" => "testscope1" } }
+        subject do
+          Releaselog::Releaselog.generate_releaselog(
+            repo_path: ".",
+            from_ref: arguments["<from-ref>"],
+            to_ref: arguments["<to-ref>"],
+            scope: arguments["--scope"],
+            format: arguments["--format"] || "slack",
+            generate_complete: arguments["--complete"],
+            verbose: (arguments["--debug"] ? true : false)
+            )
+        end
+
+        it "should include the correct entries" do
+          expect(subject).to include("this is just a test changelog entry without scope to be able to test scopes")
+          expect(subject).to include("this is just a test changelog entry for scope `testscope1` to be able to test scopes")
+          expect(subject).not_to include("this is just a test changelog entry for scope `testscope2` to be able to test scopes")
+        end
+      end
+    end
   end
 end
