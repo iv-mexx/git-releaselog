@@ -119,11 +119,37 @@ describe Releaselog do
     end
 
     context "using a scope" do
+      let(:from_commit) { "932dc90"}
+      let(:to_commit) { "f036a8b"}
+
       describe "no scope" do 
+        let(:arguments) { arguments = {"<from-ref>" => from_commit, "<to-ref>" => to_commit} }
+        subject do
+          Releaselog::Releaselog.generate_releaselog(
+            repo_path: ".",
+            from_ref: arguments["<from-ref>"],
+            to_ref: arguments["<to-ref>"],
+            scope: arguments["--scope"],
+            format: arguments["--format"] || "slack",
+            generate_complete: arguments["--complete"],
+            verbose: (arguments["--debug"] ? true : false)
+            )
+        end
+
+        it "should include the correct entries" do
+          expect(subject).to include("this is just a test changelog entry without scope to be able to test scopes")
+          expect(subject).to include("this is just a test changelog entry for scope `testscope1` to be able to test scopes")
+          expect(subject).to include("this is just a test changelog entry for scope `testscope2` to be able to test scopes")
+        end
+
+        it "should still include the scope tags" do
+          expect(subject).to include("[testscope1]")
+          expect(subject).to include("[testscope2]")
+        end
       end
 
       describe "`testscope1`" do
-        let(:arguments) { arguments = {"<from-ref>" => "932dc90", "<to-ref>" => "HEAD", "--scope" => "testscope1" } }
+        let(:arguments) { arguments = {"<from-ref>" => from_commit, "<to-ref>" => to_commit, "--scope" => "testscope1" } }
         subject do
           Releaselog::Releaselog.generate_releaselog(
             repo_path: ".",
@@ -140,6 +166,37 @@ describe Releaselog do
           expect(subject).to include("this is just a test changelog entry without scope to be able to test scopes")
           expect(subject).to include("this is just a test changelog entry for scope `testscope1` to be able to test scopes")
           expect(subject).not_to include("this is just a test changelog entry for scope `testscope2` to be able to test scopes")
+        end
+
+        it "should not include the scope tags anymore" do
+          expect(subject).not_to include("[testscope1]")
+          expect(subject).not_to include("[testscope2]")
+        end
+      end
+
+      describe "`testscope2`" do
+        let(:arguments) { arguments = {"<from-ref>" => from_commit, "<to-ref>" => to_commit, "--scope" => "testscope2" } }
+        subject do
+          Releaselog::Releaselog.generate_releaselog(
+            repo_path: ".",
+            from_ref: arguments["<from-ref>"],
+            to_ref: arguments["<to-ref>"],
+            scope: arguments["--scope"],
+            format: arguments["--format"] || "slack",
+            generate_complete: arguments["--complete"],
+            verbose: (arguments["--debug"] ? true : false)
+            )
+        end
+
+        it "should include the correct entries" do
+          expect(subject).to include("this is just a test changelog entry without scope to be able to test scopes")
+          expect(subject).not_to include("this is just a test changelog entry for scope `testscope1` to be able to test scopes")
+          expect(subject).to include("this is just a test changelog entry for scope `testscope2` to be able to test scopes")
+        end
+
+        it "should not include the scope tags anymore" do
+          expect(subject).not_to include("[testscope1]")
+          expect(subject).not_to include("[testscope2]")
         end
       end
     end
