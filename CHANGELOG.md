@@ -1,6 +1,14 @@
 ## Unreleased
 
 #### Fix
+* Providing no (or only one) ref does not crash the script anymore
+
+#### Refactor
+* this is just a test changelog entry without scope to be able to test scopes
+
+## 0.7.1
+
+#### Fix
 * searching for commits/tags that don't in the repo now continues with default values
 * When there is no `to_tag`, the release log now correctly displays "Unreleased" again instead of the latest tag name
 * Generating a release log from/to commit hashes now works again
