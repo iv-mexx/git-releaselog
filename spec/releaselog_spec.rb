@@ -71,7 +71,7 @@ describe Releaselog do
     context "creating complete changelog" do
       let(:arguments) { arguments = {"--complete" => true } }
 
-      it "should do contain known release tags" do
+      it "should contain known release tags" do
         expect(subject).to include("0.1.0")
         expect(subject).to include("0.2.0")
         expect(subject).to include("0.2.1")
