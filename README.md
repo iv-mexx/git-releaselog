@@ -2,6 +2,8 @@
 
 [![Gem Version](https://badge.fury.io/rb/git-releaselog.svg)](http://badge.fury.io/rb/git-releaselog)
 [![Build Status](https://travis-ci.org/iv-mexx/git-releaselog.svg?branch=master)](https://travis-ci.org/iv-mexx/git-releaselog)
+[![Code Climate](https://codeclimate.com/github/iv-mexx/git-releaselog/badges/gpa.svg)](https://codeclimate.com/github/iv-mexx/git-releaselog)
+[![Test Coverage](https://codeclimate.com/github/iv-mexx/git-releaselog/badges/coverage.svg)](https://codeclimate.com/github/iv-mexx/git-releaselog/coverage)
 
 This tool generates a release log from a git repository.
 
