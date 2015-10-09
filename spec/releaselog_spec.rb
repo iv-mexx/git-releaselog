@@ -16,7 +16,7 @@ describe Releaselog do
       )
   end
 
-  describe "Calling Releaselog" do
+  describe "calling Releaselog" do
     context "without parameters" do
       let(:arguments) { arguments = {} }
 
@@ -87,7 +87,7 @@ describe Releaselog do
     end
 
     context "using a scope" do
-      let(:from_commit) { "932dc90"}
+      let(:from_commit) { "5970c8b"}
       let(:to_commit) { "f036a8b"}
 
       describe "no scope" do 
@@ -137,7 +137,7 @@ describe Releaselog do
     end
 
     context "output formats" do 
-      let(:from_commit) { "932dc90"}
+      let(:from_commit) { "5970c8b"}
       let(:to_commit) { "f036a8b"}
 
       describe "slack" do
