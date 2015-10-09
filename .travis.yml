@@ -4,6 +4,9 @@ rvm:
   - 2.0.0
 script: bundle exec rspec spec
 
+git:
+  depth: 9999999
+
 notifications:
   email:
     recipients:
