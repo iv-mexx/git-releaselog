@@ -7,6 +7,10 @@ script: bundle exec rspec spec
 git:
   depth: 9999999
 
+addons:
+	code_climate:
+		repo_token: 596dae0da88397676c3525d9c7e0fb13f3b267fba47c123295267baaa6576ede 
+
 notifications:
   email:
     recipients:
